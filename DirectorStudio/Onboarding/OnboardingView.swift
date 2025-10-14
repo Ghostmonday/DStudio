@@ -9,7 +9,7 @@ struct OnboardingView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [.black, .purple.opacity(0.3), .black],
+                colors: [Color.purple.opacity(0.8), Color.black.opacity(0.9)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

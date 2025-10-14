@@ -6,6 +6,7 @@ struct OnboardingPage: View {
     let description: String
     var isLast = false
     var action: (() -> Void)?
+    @State private var isVisible = false
     
     var body: some View {
         VStack(spacing: 32) {
@@ -20,6 +21,8 @@ struct OnboardingPage: View {
                         endPoint: .bottomTrailing
                     )
                 )
+                .opacity(isVisible ? 1 : 0)
+                .animation(.easeIn(duration: 0.6), value: isVisible)
             
             VStack(spacing: 16) {
                 Text(title)
@@ -27,10 +30,13 @@ struct OnboardingPage: View {
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
+                    .opacity(isVisible ? 1 : 0)
+                    .animation(.easeIn(duration: 0.6), value: isVisible)
                 
                 Text(description)
                     .font(.body)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.secondary)
+                    .opacity(0.85)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -53,9 +59,13 @@ struct OnboardingPage: View {
                         .foregroundColor(.white)
                         .cornerRadius(16)
                 }
+                .shadow(color: Color.pink.opacity(0.4), radius: 10, x: 0, y: 5)
                 .padding(.horizontal, 40)
                 .padding(.bottom, 40)
             }
+        }
+        .onAppear {
+            isVisible = true
         }
     }
 }
