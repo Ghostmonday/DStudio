@@ -1,0 +1,1243 @@
+import SwiftUI
+import AVKit
+
+// MARK: - App Entry Point with Mac Catalyst Support
+@main
+struct DirectorStudioApp: App {
+    @StateObject private var appState = AppState()
+    @StateObject private var pipeline = DirectorStudioPipeline()
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    
+    var body: some Scene {
+        WindowGroup {
+            if hasSeenOnboarding {
+                MainTabView()
+                    .environmentObject(appState)
+                    .environmentObject(pipeline)
+            } else {
+                OnboardingView(hasSeenOnboarding: $hasSeenOnboarding)
+                    .environmentObject(appState)
+                    .environmentObject(pipeline)
+            }
+        }
+        #if os(macOS)
+        .defaultSize(width: 1200, height: 800)
+        .commands {
+            CommandGroup(replacing: .newItem) {
+                Button("New Project") {
+                    // New project action
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
+        }
+        #endif
+        
+        #if os(macOS)
+        Settings {
+            SettingsView()
+        }
+        #endif
+    }
+}
+
+#if os(macOS)
+struct SettingsView: View {
+    var body: some View {
+        TabView {
+            Form {
+                Section("API Configuration") {
+                    SecureField("DeepSeek API Key", text: .constant(""))
+                }
+            }
+            .tabItem {
+                Label("General", systemImage: "gear")
+            }
+        }
+        .frame(width: 500, height: 300)
+    }
+}
+#endif
+
+// MARK: - App State with Persistence
+class AppState: ObservableObject {
+    @Published var currentProject: Project?
+    @Published var projects: [Project] = []
+    
+    private let projectsKey = "savedProjects"
+    
+    init() {
+        loadProjects()
+        
+        // Load demo project on first launch for "Wow" moment
+        if projects.isEmpty {
+            projects.append(Project.demoProject)
+            currentProject = projects.first
+            saveProjects()
+        }
+    }
+    
+    func saveProjects() {
+        if let encoded = try? JSONEncoder().encode(projects) {
+            UserDefaults.standard.set(encoded, forKey: projectsKey)
+        }
+    }
+    
+    func loadProjects() {
+        if let data = UserDefaults.standard.data(forKey: projectsKey),
+           let decoded = try? JSONDecoder().decode([Project].self, from: data) {
+            projects = decoded
+        }
+    }
+    
+    func deleteProject(_ project: Project) {
+        projects.removeAll { $0.id == project.id }
+        if currentProject?.id == project.id {
+            currentProject = projects.first
+        }
+        saveProjects()
+    }
+}
+
+// MARK: - Enhanced Models with Export
+struct Project: Identifiable, Codable {
+    let id: UUID
+    var title: String
+    var originalStory: String
+    var rewordedStory: String?
+    var analysis: StoryAnalysisCache?
+    var segments: [PromptSegment]
+    var continuityAnchors: [ContinuityAnchorCache]
+    var createdAt: Date
+    var updatedAt: Date
+    
+    static var demoProject: Project {
+        Project(
+            id: UUID(),
+            title: "City Awakens - Demo",
+            originalStory: "The sun rises over a bustling metropolis. Sarah, a young filmmaker, stands on a rooftop with her camera. She captures the golden light dancing across skyscraper windows as the city comes alive below her. In this moment of stillness before the chaos, she realizes this footage will become the opening of her breakthrough documentary.",
+            segments: [],
+            continuityAnchors: [],
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+    }
+    
+    // Export as screenplay format
+    func exportAsScreenplay() -> String {
+        var screenplay = """
+        \(title.uppercased())
+        
+        Written with DirectorStudio
+        Created: \(createdAt.formatted(date: .abbreviated, time: .omitted))
+        Updated: \(updatedAt.formatted(date: .abbreviated, time: .omitted))
+        
+        ═══════════════════════════════════════════════════
+        
+        """
+        
+        if let analysis = analysis {
+            screenplay += """
+            
+            STORY ANALYSIS
+            Characters: \(analysis.characterCount)
+            Locations: \(analysis.locationCount)
+            Scenes: \(analysis.sceneCount)
+            
+            ═══════════════════════════════════════════════════
+            
+            """
+        }
+        
+        if !continuityAnchors.isEmpty {
+            screenplay += "\nCHARACTER CONTINUITY\n\n"
+            for anchor in continuityAnchors {
+                screenplay += """
+                \(anchor.characterName.uppercased())
+                \(anchor.visualDescription)
+                
+                """
+            }
+            screenplay += "═══════════════════════════════════════════════════\n\n"
+        }
+        
+        screenplay += "ORIGINAL STORY\n\n\(originalStory)\n\n"
+        
+        if let reworded = rewordedStory {
+            screenplay += """
+            ═══════════════════════════════════════════════════
+            
+            TRANSFORMED VERSION
+            
+            \(reworded)
+            
+            """
+        }
+        
+        if !segments.isEmpty {
+            screenplay += """
+            ═══════════════════════════════════════════════════
+            
+            SCENE BREAKDOWN
+            Total Segments: \(segments.count)
+            Total Duration: \(segments.reduce(0) { $0 + $1.duration })s
+            
+            """
+            
+            for segment in segments {
+                screenplay += """
+                
+                ───────────────────────────────────────────────────
+                SCENE \(segment.index) [\(segment.duration)s]
+                ───────────────────────────────────────────────────
+                
+                \(segment.content)
+                
+                """
+                
+                if let tags = segment.cinematicTags {
+                    screenplay += """
+                    
+                    CINEMATIC DIRECTION:
+                    • Shot Type: \(tags.shotType)
+                    • Camera Angle: \(tags.cameraAngle)
+                    • Lighting: \(tags.lighting)
+                    • Mood: \(tags.mood)
+                    
+                    """
+                }
+            }
+        }
+        
+        screenplay += """
+        
+        ═══════════════════════════════════════════════════
+        END OF SCREENPLAY
+        ═══════════════════════════════════════════════════
+        """
+        
+        return screenplay
+    }
+    
+    // Export as JSON
+    func exportAsJSON() -> String {
+        if let data = try? JSONEncoder().encode(self),
+           let jsonString = String(data: data, encoding: .utf8) {
+            return jsonString
+        }
+        return "{}"
+    }
+    
+    // Export segments as simple prompt list
+    func exportAsPromptList() -> String {
+        var output = "\(title)\n\n"
+        output += "AI Video Prompts\n"
+        output += "Generated: \(Date().formatted())\n\n"
+        
+        for segment in segments {
+            output += "Prompt \(segment.index):\n"
+            output += "\(segment.content)\n"
+            if let tags = segment.cinematicTags {
+                output += "[\(tags.shotType) | \(tags.lighting) | \(tags.mood)]\n"
+            }
+            output += "\n"
+        }
+        
+        return output
+    }
+}
+
+struct StoryAnalysisCache: Codable {
+    let characterCount: Int
+    let locationCount: Int
+    let sceneCount: Int
+}
+
+struct ContinuityAnchorCache: Identifiable, Codable {
+    let id: UUID
+    let characterName: String
+    let visualDescription: String
+}
+
+// MARK: - Main Tab View with Adaptive Layout
+struct MainTabView: View {
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var pipeline: DirectorStudioPipeline
+    @State private var selectedTab = 0
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
+    var body: some View {
+        Group {
+            if horizontalSizeClass == .regular {
+                // iPad, Mac - Sidebar navigation
+                NavigationSplitView {
+                    List(selection: $selectedTab) {
+                        Label("Create", systemImage: "lightbulb.fill")
+                            .tag(0)
+                        Label("Studio", systemImage: "film.fill")
+                            .tag(1)
+                        Label("Library", systemImage: "square.grid.2x2.fill")
+                            .tag(2)
+                    }
+                    .navigationTitle("DirectorStudio")
+                } detail: {
+                    selectedTabView
+                }
+            } else {
+                // iPhone - Tab bar
+                TabView(selection: $selectedTab) {
+                    CreateView()
+                        .tabItem {
+                            Label("Create", systemImage: "lightbulb.fill")
+                        }
+                        .tag(0)
+                    
+                    StudioView()
+                        .tabItem {
+                            Label("Studio", systemImage: "film.fill")
+                        }
+                        .tag(1)
+                    
+                    LibraryView()
+                        .tabItem {
+                            Label("Library", systemImage: "square.grid.2x2.fill")
+                        }
+                        .tag(2)
+                }
+                .tint(.purple)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var selectedTabView: some View {
+        switch selectedTab {
+        case 0: CreateView()
+        case 1: StudioView()
+        case 2: LibraryView()
+        default: CreateView()
+        }
+    }
+}
+
+// MARK: - CREATE TAB - Adaptive Layout
+struct CreateView: View {
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var pipeline: DirectorStudioPipeline
+    @State private var projectTitle = ""
+    @State private var storyInput = ""
+    @State private var selectedRewordType: RewordingType?
+    @State private var showPipelineSheet = false
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                // Cinematic gradient
+                LinearGradient(
+                    colors: [.black, Color.purple.opacity(0.2), .black],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: horizontalSizeClass == .regular ? 32 : 28) {
+                        // Header
+                        VStack(spacing: 8) {
+                            Image(systemName: "film.stack")
+                                .font(.system(size: horizontalSizeClass == .regular ? 64 : 48))
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.purple, .pink],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                            
+                            Text("Your Story Begins Here")
+                                .font(horizontalSizeClass == .regular ? .largeTitle : .title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            
+                            Text("Write, transform, and bring your vision to life")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.top, 32)
+                        
+                        // Adaptive content width
+                        contentView
+                            .frame(maxWidth: horizontalSizeClass == .regular ? 800 : .infinity)
+                    }
+                    .padding(.bottom, 32)
+                }
+            }
+            .navigationTitle("Create")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showPipelineSheet) {
+                PipelineProgressSheet()
+            }
+        }
+    }
+    
+    var contentView: some View {
+        VStack(spacing: horizontalSizeClass == .regular ? 24 : 20) {
+            // Project Title Input
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Project Title", systemImage: "tag.fill")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                TextField("Enter project name", text: $projectTitle)
+                    .textFieldStyle(.plain)
+                    .padding()
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(12)
+                    .foregroundColor(.white)
+            }
+            .padding(.horizontal)
+            
+            // Story Input
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Your Story", systemImage: "text.quote")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                TextEditor(text: $storyInput)
+                    .frame(height: horizontalSizeClass == .regular ? 240 : 180)
+                    .scrollContentBackground(.hidden)
+                    .padding()
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(12)
+                    .foregroundColor(.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+                    )
+            }
+            .padding(.horizontal)
+            
+            // Module 1: Rewording Options
+            ModuleCard(
+                title: "Transform Your Words",
+                icon: "wand.and.stars",
+                description: "Modernize, refine grammar, or restyle your narrative"
+            ) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Transformation Type")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    Picker("Type", selection: $selectedRewordType) {
+                        Text("None").tag(nil as RewordingType?)
+                        Divider()
+                        ForEach(RewordingType.allCases) { type in
+                            Text(type.rawValue).tag(type as RewordingType?)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(.purple)
+                }
+            }
+            
+            // Module 2 & 3: Coming Soon Preview
+            ModuleCard(
+                title: "Cinematic Taxonomy",
+                icon: "camera.aperture",
+                description: "Add camera angles, lighting, and shot types",
+                comingSoon: false
+            ) {
+                Text("Automatically analyzes each scene")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            ModuleCard(
+                title: "Prompt Breakdown",
+                icon: "rectangle.split.3x1",
+                description: "Break story into AI-ready video prompts",
+                comingSoon: false
+            ) {
+                Text("Segments your story into 15s scenes")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            // Run Pipeline Button
+            Button(action: {
+                showPipelineSheet = true
+                Task {
+                    await pipeline.runFullPipeline(
+                        story: storyInput,
+                        rewordType: selectedRewordType,
+                        projectTitle: projectTitle.isEmpty ? "Untitled Project" : projectTitle
+                    )
+                    
+                    // Save to app state
+                    if pipeline.completedSteps.count == 6 {
+                        let newProject = Project(
+                            id: UUID(),
+                            title: projectTitle.isEmpty ? "Untitled Project" : projectTitle,
+                            originalStory: storyInput,
+                            rewordedStory: pipeline.rewordingModule.result.isEmpty ? nil : pipeline.rewordingModule.result,
+                            analysis: StoryAnalysisCache(
+                                characterCount: pipeline.storyAnalyzer.analysis?.characters.count ?? 0,
+                                locationCount: pipeline.storyAnalyzer.analysis?.locations.count ?? 0,
+                                sceneCount: pipeline.storyAnalyzer.analysis?.scenes.count ?? 0
+                            ),
+                            segments: pipeline.segmentationModule.segments,
+                            continuityAnchors: pipeline.continuityModule.anchors.map {
+                                ContinuityAnchorCache(
+                                    id: UUID(),
+                                    characterName: $0.characterName,
+                                    visualDescription: $0.visualDescription
+                                )
+                            },
+                            createdAt: Date(),
+                            updatedAt: Date()
+                        )
+                        
+                        await MainActor.run {
+                            appState.projects.append(newProject)
+                            appState.currentProject = newProject
+                        }
+                    }
+                }
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "bolt.fill")
+                    Text("Process with AI")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(
+                    LinearGradient(
+                        colors: [.purple, .pink],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .foregroundColor(.white)
+                .cornerRadius(16)
+                .shadow(color: .purple.opacity(0.5), radius: 10)
+            }
+            .disabled(storyInput.isEmpty || pipeline.isRunning)
+            .padding(.horizontal)
+            .padding(.top, 8)
+            
+            if !storyInput.isEmpty && !pipeline.isRunning {
+                Text("This will run all 6 AI modules")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+}
+
+// MARK: - STUDIO TAB - Show Processing Results with Export
+struct StudioView: View {
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var pipeline: DirectorStudioPipeline
+    @State private var showExportSheet = false
+    @State private var exportFormat: ExportFormat = .screenplay
+    @State private var showShareSheet = false
+    @State private var exportedContent = ""
+    
+    enum ExportFormat: String, CaseIterable {
+        case screenplay = "Screenplay (.txt)"
+        case json = "JSON Data (.json)"
+        case promptList = "Prompt List (.txt)"
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                if let project = appState.currentProject, !pipeline.segmentationModule.segments.isEmpty {
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            // Project Header with Export Button
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(project.title)
+                                            .font(.title)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                        
+                                        if let analysis = project.analysis {
+                                            HStack(spacing: 16) {
+                                                Label("\(analysis.characterCount) characters", systemImage: "person.2")
+                                                Label("\(analysis.sceneCount) scenes", systemImage: "film")
+                                            }
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: { showExportSheet = true }) {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "square.and.arrow.up")
+                                            Text("Export")
+                                        }
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 10)
+                                        .background(
+                                            LinearGradient(
+                                                colors: [.purple, .pink],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .foregroundColor(.white)
+                                        .cornerRadius(10)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .padding()
+                            
+                            // Scene Segments
+                            ForEach(pipeline.segmentationModule.segments) { segment in
+                                SceneCard(segment: segment)
+                            }
+                        }
+                        .padding()
+                    }
+                } else {
+                    ContentUnavailableView(
+                        "No Scenes Yet",
+                        systemImage: "film.stack",
+                        description: Text("Create a story in the Create tab to get started")
+                    )
+                    .foregroundColor(.white)
+                }
+            }
+            .navigationTitle("Studio")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showExportSheet) {
+                ExportSheet(
+                    project: appState.currentProject,
+                    selectedFormat: $exportFormat,
+                    showShareSheet: $showShareSheet,
+                    exportedContent: $exportedContent
+                )
+            }
+            .sheet(isPresented: $showShareSheet) {
+                if let project = appState.currentProject {
+                    ShareSheet(activityItems: [exportedContent])
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Export Sheet
+struct ExportSheet: View {
+    let project: Project?
+    @Binding var selectedFormat: StudioView.ExportFormat
+    @Binding var showShareSheet: Bool
+    @Binding var exportedContent: String
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                VStack(spacing: 24) {
+                    // Format Selection
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Export Format")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        
+                        ForEach(StudioView.ExportFormat.allCases, id: \.self) { format in
+                            Button(action: { selectedFormat = format }) {
+                                HStack {
+                                    Image(systemName: selectedFormat == format ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(selectedFormat == format ? .purple : .gray)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(format.rawValue)
+                                            .foregroundColor(.white)
+                                        
+                                        Text(formatDescription(format))
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color.white.opacity(0.1))
+                                .cornerRadius(12)
+                            }
+                        }
+                    }
+                    .padding()
+                    
+                    Spacer()
+                    
+                    // Export Buttons
+                    VStack(spacing: 12) {
+                        Button(action: {
+                            generateExport()
+                            showShareSheet = true
+                            dismiss()
+                        }) {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("Share")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(
+                                    colors: [.purple, .pink],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
+                        
+                        Button(action: {
+                            generateExport()
+                            saveToFiles()
+                        }) {
+                            HStack {
+                                Image(systemName: "folder")
+                                Text("Save to Files")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white.opacity(0.2))
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
+                        
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                        .foregroundColor(.gray)
+                    }
+                    .padding()
+                }
+            }
+            .navigationTitle("Export Project")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+    
+    func formatDescription(_ format: StudioView.ExportFormat) -> String {
+        switch format {
+        case .screenplay:
+            return "Full screenplay with scenes, characters, and cinematic direction"
+        case .json:
+            return "Raw data format for technical integration"
+        case .promptList:
+            return "Simple list of AI prompts ready for video generation"
+        }
+    }
+    
+    func generateExport() {
+        guard let project = project else { return }
+        
+        switch selectedFormat {
+        case .screenplay:
+            exportedContent = project.exportAsScreenplay()
+        case .json:
+            exportedContent = project.exportAsJSON()
+        case .promptList:
+            exportedContent = project.exportAsPromptList()
+        }
+    }
+    
+    func saveToFiles() {
+        guard let project = project else { return }
+        
+        let fileName: String
+        let content = exportedContent
+        
+        switch selectedFormat {
+        case .screenplay, .promptList:
+            fileName = "\(project.title.replacingOccurrences(of: " ", with: "_"))_\(Date().timeIntervalSince1970).txt"
+        case .json:
+            fileName = "\(project.title.replacingOccurrences(of: " ", with: "_"))_\(Date().timeIntervalSince1970).json"
+        }
+        
+        do {
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = documentsPath.appendingPathComponent(fileName)
+            try content.write(to: fileURL, atomically: true, encoding: .utf8)
+            
+            // Show success feedback
+            print("✅ Saved to: \(fileURL.path)")
+        } catch {
+            print("❌ Save error: \(error.localizedDescription)")
+        }
+        
+        dismiss()
+    }
+}
+
+// MARK: - Share Sheet (UIKit Bridge)
+#if os(iOS)
+struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: nil
+        )
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+#endif
+
+struct SceneCard: View {
+    let segment: PromptSegment
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Scene \(segment.index)")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                Text("\(segment.duration)s")
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.purple.opacity(0.3))
+                    .cornerRadius(8)
+                    .foregroundColor(.purple)
+            }
+            
+            Text(segment.content)
+                .font(.body)
+                .foregroundColor(.gray)
+                .lineLimit(3)
+            
+            if let tags = segment.cinematicTags {
+                HStack(spacing: 8) {
+                    Tag(text: tags.shotType, icon: "camera")
+                    Tag(text: tags.lighting, icon: "light.max")
+                    Tag(text: tags.mood, icon: "sparkles")
+                }
+            }
+            
+            // Coming Soon: Video Generation
+            Button(action: {}) {
+                HStack {
+                    Image(systemName: "play.circle")
+                    Text("Generate Video")
+                    Spacer()
+                    Text("Coming Soon")
+                        .font(.caption2)
+                        .foregroundColor(.orange)
+                }
+                .foregroundColor(.gray)
+            }
+            .disabled(true)
+            .padding()
+            .background(Color.white.opacity(0.05))
+            .cornerRadius(12)
+        }
+        .padding()
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+    }
+}
+
+struct Tag: View {
+    let text: String
+    let icon: String
+    
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+            Text(text)
+        }
+        .font(.caption2)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.purple.opacity(0.2))
+        .cornerRadius(6)
+        .foregroundColor(.purple)
+    }
+}
+
+// MARK: - LIBRARY TAB - Adaptive Grid with Delete
+struct LibraryView: View {
+    @EnvironmentObject var appState: AppState
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @State private var projectToDelete: Project?
+    @State private var showDeleteAlert = false
+    
+    var columns: [GridItem] {
+        if horizontalSizeClass == .regular {
+            // iPad/Mac: 3-4 columns
+            return Array(repeating: GridItem(.flexible(), spacing: 16), count: 3)
+        } else {
+            // iPhone: 2 columns
+            return Array(repeating: GridItem(.flexible(), spacing: 16), count: 2)
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                if appState.projects.isEmpty {
+                    ContentUnavailableView(
+                        "No Projects",
+                        systemImage: "folder",
+                        description: Text("Create your first story in the Create tab")
+                    )
+                    .foregroundColor(.white)
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 16) {
+                            ForEach(appState.projects) { project in
+                                ProjectCard(
+                                    project: project,
+                                    onDelete: {
+                                        projectToDelete = project
+                                        showDeleteAlert = true
+                                    }
+                                )
+                            }
+                        }
+                        .padding()
+                    }
+                }
+            }
+            .navigationTitle("Library")
+            .navigationBarTitleDisplayMode(.inline)
+            .alert("Delete Project?", isPresented: $showDeleteAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete", role: .destructive) {
+                    if let project = projectToDelete {
+                        appState.deleteProject(project)
+                    }
+                }
+            } message: {
+                Text("This action cannot be undone. All scenes and data will be permanently deleted.")
+            }
+        }
+    }
+}
+
+struct ProjectCard: View {
+    let project: Project
+    var onDelete: (() -> Void)?
+    @State private var showMenu = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "film.fill")
+                    .font(.largeTitle)
+                    .foregroundColor(.purple)
+                
+                Spacer()
+                
+                if onDelete != nil {
+                    Button(action: { showMenu = true }) {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundColor(.gray)
+                    }
+                    .confirmationDialog("Project Options", isPresented: $showMenu) {
+                        Button("Delete", role: .destructive) {
+                            onDelete?()
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    }
+                }
+            }
+            
+            Text(project.title)
+                .font(.headline)
+                .foregroundColor(.white)
+                .lineLimit(2)
+            
+            Text("\(project.segments.count) scenes")
+                .font(.caption)
+                .foregroundColor(.gray)
+            
+            Text(project.updatedAt, style: .date)
+                .font(.caption2)
+                .foregroundColor(.gray.opacity(0.7))
+        }
+        .padding()
+        .frame(height: 180)
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+    }
+}
+
+// MARK: - Pipeline Progress Sheet
+struct PipelineProgressSheet: View {
+    @EnvironmentObject var pipeline: DirectorStudioPipeline
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                VStack(spacing: 24) {
+                    if pipeline.isRunning {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(.purple)
+                            .padding()
+                        
+                        Text("Processing your story...")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                    }
+                    
+                    VStack(spacing: 16) {
+                        PipelineStepView(
+                            number: 1,
+                            title: "Rewording",
+                            isActive: pipeline.currentStep == 1,
+                            isComplete: pipeline.completedSteps.contains(1)
+                        )
+                        
+                        PipelineStepView(
+                            number: 2,
+                            title: "Story Analysis",
+                            isActive: pipeline.currentStep == 2,
+                            isComplete: pipeline.completedSteps.contains(2)
+                        )
+                        
+                        PipelineStepView(
+                            number: 3,
+                            title: "Prompt Segmentation",
+                            isActive: pipeline.currentStep == 3,
+                            isComplete: pipeline.completedSteps.contains(3)
+                        )
+                        
+                        PipelineStepView(
+                            number: 4,
+                            title: "Cinematic Taxonomy",
+                            isActive: pipeline.currentStep == 4,
+                            isComplete: pipeline.completedSteps.contains(4)
+                        )
+                        
+                        PipelineStepView(
+                            number: 5,
+                            title: "Continuity Anchors",
+                            isActive: pipeline.currentStep == 5,
+                            isComplete: pipeline.completedSteps.contains(5)
+                        )
+                        
+                        PipelineStepView(
+                            number: 6,
+                            title: "Package Screenplay",
+                            isActive: pipeline.currentStep == 6,
+                            isComplete: pipeline.completedSteps.contains(6)
+                        )
+                    }
+                    .padding()
+                    
+                    if pipeline.completedSteps.count == 6 {
+                        Button("View in Studio") {
+                            dismiss()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.purple)
+                    }
+                    
+                    if let error = pipeline.errorMessage {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .font(.caption)
+                            .padding()
+                    }
+                }
+            }
+            .navigationTitle("AI Processing")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if !pipeline.isRunning {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Onboarding View
+struct OnboardingView: View {
+    @Binding var hasSeenOnboarding: Bool
+    @EnvironmentObject var appState: AppState
+    @State private var currentPage = 0
+    
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [.black, .purple.opacity(0.3), .black],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            TabView(selection: $currentPage) {
+                OnboardingPage(
+                    icon: "film.stack.fill",
+                    title: "Welcome to DirectorStudio",
+                    description: "Transform your stories into cinematic video prompts with AI"
+                ).tag(0)
+                
+                OnboardingPage(
+                    icon: "wand.and.stars",
+                    title: "Intelligent Rewording",
+                    description: "Modernize language, improve grammar, and restyle your narrative"
+                ).tag(1)
+                
+                OnboardingPage(
+                    icon: "camera.aperture",
+                    title: "Cinematic Taxonomy",
+                    description: "Automatically add camera angles, lighting, and shot types"
+                ).tag(2)
+                
+                OnboardingPage(
+                    icon: "rectangle.split.3x1",
+                    title: "Smart Segmentation",
+                    description: "Break your story into AI-ready video prompts",
+                    isLast: true,
+                    action: { hasSeenOnboarding = true }
+                ).tag(3)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
+        }
+    }
+}
+
+struct OnboardingPage: View {
+    let icon: String
+    let title: String
+    let description: String
+    var isLast = false
+    var action: (() -> Void)?
+    
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+            
+            Image(systemName: icon)
+                .font(.system(size: 80))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.purple, .pink],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            
+            VStack(spacing: 16) {
+                Text(title)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                
+                Text(description)
+                    .font(.body)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            
+            Spacer()
+            
+            if isLast {
+                Button(action: { action?() }) {
+                    Text("Get Started")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [.purple, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(16)
+                }
+                .padding(.horizontal, 40)
+                .padding(.bottom, 40)
+            }
+        }
+    }
+}
+
+// MARK: - Supporting Views
+struct ModuleCard<Content: View>: View {
+    let title: String
+    let icon: String
+    let description: String
+    var comingSoon: Bool = false
+    @ViewBuilder let content: Content
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(.purple)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    Text(description)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                if comingSoon {
+                    Text("Soon")
+                        .font(.caption2)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.orange.opacity(0.2))
+                        .foregroundColor(.orange)
+                        .cornerRadius(6)
+                }
+            }
+            
+            content
+        }
+        .padding()
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+        .padding(.horizontal)
+        .opacity(comingSoon ? 0.6 : 1)
+    }
+}

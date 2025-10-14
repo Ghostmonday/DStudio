@@ -1,0 +1,1176 @@
+import Foundation
+import SwiftUI
+
+// MARK: - Configuration
+struct DeepSeekConfig {
+    static let baseURL = "https://api.deepseek.com/v1/chat/completions"
+    static let model = "deepseek-chat"
+    static var apiKey: String {
+        // TODO: Replace with secure keychain storage in production
+        return UserDefaults.standard.string(forKey: "deepseek_api_key") ?? ""
+    }
+}
+
+// MARK: - Common Models
+struct DeepSeekRequest: Codable {
+    let model: String
+    let messages: [Message]
+    let temperature: Double
+    let maxTokens: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case model, messages, temperature
+        case maxTokens = "max_tokens"
+    }
+    
+    struct Message: Codable {
+        let role: String
+        let content: String
+    }
+}
+
+struct DeepSeekResponse: Codable {
+    let choices: [Choice]
+    
+    struct Choice: Codable {
+        let message: Message
+        
+        struct Message: Codable {
+            let content: String
+        }
+    }
+}
+
+enum AIModuleError: LocalizedError {
+    case invalidAPIKey
+    case networkError(String)
+    case parsingError(String)
+    case emptyResponse
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidAPIKey:
+            return "API key is missing or invalid"
+        case .networkError(let msg):
+            return "Network error: \(msg)"
+        case .parsingError(let msg):
+            return "Failed to parse response: \(msg)"
+        case .emptyResponse:
+            return "Received empty response from API"
+        }
+    }
+}
+
+// MARK: - Base Service Protocol
+protocol AIServiceProtocol {
+    func sendRequest(systemPrompt: String, userPrompt: String, temperature: Double, maxTokens: Int?) async throws -> String
+}
+
+// MARK: - DeepSeek Service Implementation
+class DeepSeekService: AIServiceProtocol {
+    
+    func sendRequest(systemPrompt: String, userPrompt: String, temperature: Double = 0.7, maxTokens: Int? = 2000) async throws -> String {
+        
+        guard !DeepSeekConfig.apiKey.isEmpty else {
+            throw AIModuleError.invalidAPIKey
+        }
+        
+        guard let url = URL(string: DeepSeekConfig.baseURL) else {
+            throw AIModuleError.networkError("Invalid URL")
+        }
+        
+        let messages = [
+            DeepSeekRequest.Message(role: "system", content: systemPrompt),
+            DeepSeekRequest.Message(role: "user", content: userPrompt)
+        ]
+        
+        let request = DeepSeekRequest(
+            model: DeepSeekConfig.model,
+            messages: messages,
+            temperature: temperature,
+            maxTokens: maxTokens
+        )
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("Bearer \(DeepSeekConfig.apiKey)", forHTTPHeaderField: "Authorization")
+        urlRequest.httpBody = try JSONEncoder().encode(request)
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AIModuleError.networkError("Invalid response type")
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw AIModuleError.networkError("Status \(httpResponse.statusCode): \(errorMessage)")
+        }
+        
+        let decoder = JSONDecoder()
+        let deepSeekResponse = try decoder.decode(DeepSeekResponse.self, from: data)
+        
+        guard let content = deepSeekResponse.choices.first?.message.content, !content.isEmpty else {
+            throw AIModuleError.emptyResponse
+        }
+        
+        return content
+    }
+}
+
+// MARK: - MODULE 1: Rewording Module
+enum RewordingType: String, CaseIterable, Identifiable {
+    case modernizeOldEnglish = "Modernize Old English"
+    case improveGrammar = "Improve Grammar"
+    case casualTone = "Casual Tone"
+    case formalTone = "Formal Tone"
+    case poeticStyle = "Poetic Style"
+    case fasterPacing = "Faster Pacing"
+    case cinematicMood = "Cinematic Mood"
+    
+    var id: String { rawValue }
+    
+    var systemPrompt: String {
+        switch self {
+        case .modernizeOldEnglish:
+            return "You are an expert at modernizing archaic or old English text into contemporary, natural language while preserving the original meaning and tone. Make it accessible to modern readers."
+        case .improveGrammar:
+            return "You are a professional editor specializing in grammar improvement. Fix grammatical errors, improve sentence structure, and enhance clarity without changing the core meaning or voice."
+        case .casualTone:
+            return "You are a skilled writer who can transform text into a casual, conversational tone. Make it feel natural, approachable, and relatable while keeping the essential message intact."
+        case .formalTone:
+            return "You are an expert at transforming text into formal, professional language. Elevate the sophistication and polish while maintaining the original meaning."
+        case .poeticStyle:
+            return "You are a poet who can transform narrative text into poetic, evocative language with vivid imagery and rhythmic flow while preserving the story."
+        case .fasterPacing:
+            return "You are an editor specializing in pacing. Rewrite the text to be more dynamic, urgent, and fast-paced. Use shorter sentences, active voice, and punchy language."
+        case .cinematicMood:
+            return "You are a screenwriter who can transform text into cinematic prose with visual richness, atmospheric detail, and dramatic tension suitable for film."
+        }
+    }
+}
+
+class RewordingModule: ObservableObject {
+    @Published var isProcessing = false
+    @Published var result: String = ""
+    @Published var errorMessage: String?
+    
+    private let service: AIServiceProtocol
+    
+    init(service: AIServiceProtocol = DeepSeekService()) {
+        self.service = service
+    }
+    
+    func reword(text: String, type: RewordingType) async {
+        await MainActor.run {
+            isProcessing = true
+            errorMessage = nil
+            result = ""
+        }
+        
+        do {
+            let userPrompt = "Rewrite the following text:\n\n\(text)"
+            let response = try await service.sendRequest(
+                systemPrompt: type.systemPrompt,
+                userPrompt: userPrompt,
+                temperature: 0.7,
+                maxTokens: 3000
+            )
+            
+            await MainActor.run {
+                result = response
+                isProcessing = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+                isProcessing = false
+            }
+        }
+    }
+}
+
+// MARK: - MODULE 2: Story Analyzer Module
+struct StoryAnalysis: Codable {
+    let characters: [Character]
+    let locations: [Location]
+    let scenes: [Scene]
+    let dialogueBlocks: [DialogueBlock]
+    
+    struct Character: Codable, Identifiable {
+        let id = UUID()
+        let name: String
+        let role: String
+        let description: String
+        
+        enum CodingKeys: String, CodingKey {
+            case name, role, description
+        }
+    }
+    
+    struct Location: Codable, Identifiable {
+        let id = UUID()
+        let name: String
+        let type: String
+        let description: String
+        
+        enum CodingKeys: String, CodingKey {
+            case name, type, description
+        }
+    }
+    
+    struct Scene: Codable, Identifiable {
+        let id = UUID()
+        let sceneNumber: Int
+        let setting: String
+        let timeOfDay: String
+        let summary: String
+        
+        enum CodingKeys: String, CodingKey {
+            case sceneNumber = "scene_number"
+            case setting
+            case timeOfDay = "time_of_day"
+            case summary
+        }
+    }
+    
+    struct DialogueBlock: Codable, Identifiable {
+        let id = UUID()
+        let character: String
+        let dialogue: String
+        let context: String
+        
+        enum CodingKeys: String, CodingKey {
+            case character, dialogue, context
+        }
+    }
+}
+
+class StoryAnalyzerModule: ObservableObject {
+    @Published var isProcessing = false
+    @Published var analysis: StoryAnalysis?
+    @Published var errorMessage: String?
+    
+    private let service: AIServiceProtocol
+    
+    init(service: AIServiceProtocol = DeepSeekService()) {
+        self.service = service
+    }
+    
+    func analyze(story: String) async {
+        await MainActor.run {
+            isProcessing = true
+            errorMessage = nil
+            analysis = nil
+        }
+        
+        let systemPrompt = """
+        You are an expert story analyst. Extract and identify:
+        1. All characters with their roles and brief descriptions
+        2. All locations/settings with types and descriptions
+        3. Individual scenes with numbers, settings, time of day, and summaries
+        4. Dialogue blocks with character names, dialogue, and context
+        
+        Return ONLY valid JSON in this exact format:
+        {
+            "characters": [{"name": "...", "role": "...", "description": "..."}],
+            "locations": [{"name": "...", "type": "...", "description": "..."}],
+            "scenes": [{"scene_number": 1, "setting": "...", "time_of_day": "...", "summary": "..."}],
+            "dialogueBlocks": [{"character": "...", "dialogue": "...", "context": "..."}]
+        }
+        """
+        
+        let userPrompt = "Analyze this story:\n\n\(story)"
+        
+        do {
+            let response = try await service.sendRequest(
+                systemPrompt: systemPrompt,
+                userPrompt: userPrompt,
+                temperature: 0.3,
+                maxTokens: 4000
+            )
+            
+            let jsonData = extractJSON(from: response)
+            let decoder = JSONDecoder()
+            let storyAnalysis = try decoder.decode(StoryAnalysis.self, from: jsonData)
+            
+            await MainActor.run {
+                analysis = storyAnalysis
+                isProcessing = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+                isProcessing = false
+            }
+        }
+    }
+    
+    private func extractJSON(from response: String) -> Data {
+        if let jsonStart = response.firstIndex(of: "{"),
+           let jsonEnd = response.lastIndex(of: "}") {
+            let jsonString = String(response[jsonStart...jsonEnd])
+            return jsonString.data(using: .utf8) ?? Data()
+        }
+        return response.data(using: .utf8) ?? Data()
+    }
+}
+
+// MARK: - MODULE 3: Prompt Segmentation Module
+struct PromptSegment: Codable, Identifiable {
+    let id = UUID()
+    let index: Int
+    let duration: Int // Target duration in seconds
+    let content: String
+    let characters: [String]
+    let setting: String
+    let action: String
+    let continuityNotes: String
+    
+    enum CodingKeys: String, CodingKey {
+        case index, duration, content, characters, setting, action
+        case continuityNotes = "continuity_notes"
+    }
+}
+
+class PromptSegmentationModule: ObservableObject {
+    @Published var isProcessing = false
+    @Published var segments: [PromptSegment] = []
+    @Published var errorMessage: String?
+    
+    private let service: AIServiceProtocol
+    
+    init(service: AIServiceProtocol = DeepSeekService()) {
+        self.service = service
+    }
+    
+    func segment(story: String, targetDuration: Int = 15) async {
+        await MainActor.run {
+            isProcessing = true
+            errorMessage = nil
+            segments = []
+        }
+        
+        let systemPrompt = """
+        You are an expert at breaking stories into short video prompt segments. Each segment should be \(targetDuration) seconds of content.
+        
+        Break the story into logical beats/scenes. For each segment provide:
+        - Index number
+        - Duration (target \(targetDuration)s)
+        - Content (the actual prompt text for video generation)
+        - Characters present
+        - Setting description
+        - Main action
+        - Continuity notes (to maintain consistency across segments)
+        
+        Return ONLY valid JSON array:
+        [
+            {
+                "index": 1,
+                "duration": \(targetDuration),
+                "content": "...",
+                "characters": ["..."],
+                "setting": "...",
+                "action": "...",
+                "continuity_notes": "..."
+            }
+        ]
+        """
+        
+        let userPrompt = "Break this story into video prompt segments:\n\n\(story)"
+        
+        do {
+            let response = try await service.sendRequest(
+                systemPrompt: systemPrompt,
+                userPrompt: userPrompt,
+                temperature: 0.4,
+                maxTokens: 4000
+            )
+            
+            let jsonData = extractJSON(from: response)
+            let decoder = JSONDecoder()
+            let promptSegments = try decoder.decode([PromptSegment].self, from: jsonData)
+            
+            await MainActor.run {
+                segments = promptSegments
+                isProcessing = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+                isProcessing = false
+            }
+        }
+    }
+    
+    private func extractJSON(from response: String) -> Data {
+        if let jsonStart = response.firstIndex(of: "["),
+           let jsonEnd = response.lastIndex(of: "]") {
+            let jsonString = String(response[jsonStart...jsonEnd])
+            return jsonString.data(using: .utf8) ?? Data()
+        }
+        return response.data(using: .utf8) ?? Data()
+    }
+}
+
+// MARK: - MODULE 4: Cinematic Taxonomy Module
+struct CinematicTaxonomy: Codable {
+    let shotType: String
+    let cameraAngle: String
+    let framing: String
+    let lighting: String
+    let colorPalette: String
+    let lensType: String
+    let cameraMovement: String
+    let emotionalTone: String
+    let visualStyle: String
+    let actionCues: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case shotType = "shot_type"
+        case cameraAngle = "camera_angle"
+        case framing
+        case lighting
+        case colorPalette = "color_palette"
+        case lensType = "lens_type"
+        case cameraMovement = "camera_movement"
+        case emotionalTone = "emotional_tone"
+        case visualStyle = "visual_style"
+        case actionCues = "action_cues"
+    }
+}
+
+class CinematicTaxonomyModule: ObservableObject {
+    @Published var isProcessing = false
+    @Published var taxonomy: CinematicTaxonomy?
+    @Published var errorMessage: String?
+    
+    private let service: AIServiceProtocol
+    
+    init(service: AIServiceProtocol = DeepSeekService()) {
+        self.service = service
+    }
+    
+    func analyzeCinematic(scene: String) async {
+        await MainActor.run {
+            isProcessing = true
+            errorMessage = nil
+            taxonomy = nil
+        }
+        
+        let systemPrompt = """
+        You are a cinematography expert. Analyze the scene and provide detailed cinematic taxonomy:
+        
+        - shot_type: (e.g., "Close-up", "Wide shot", "Medium shot", "Extreme close-up")
+        - camera_angle: (e.g., "Eye level", "Low angle", "High angle", "Dutch angle")
+        - framing: (e.g., "Rule of thirds", "Center frame", "Symmetrical")
+        - lighting: (e.g., "Natural light", "Dramatic chiaroscuro", "Soft diffused", "Golden hour")
+        - color_palette: (e.g., "Warm tones", "Cool blues", "Desaturated", "High contrast")
+        - lens_type: (e.g., "Wide angle 24mm", "Standard 50mm", "Telephoto 85mm")
+        - camera_movement: (e.g., "Static", "Dolly in", "Pan right", "Handheld", "Steadicam tracking")
+        - emotional_tone: (e.g., "Tense", "Melancholic", "Triumphant", "Mysterious")
+        - visual_style: (e.g., "Film noir", "Naturalistic", "Surreal", "Documentary")
+        - action_cues: Array of key actions/beats in the scene
+        
+        Return ONLY valid JSON in this exact format:
+        {
+            "shot_type": "...",
+            "camera_angle": "...",
+            "framing": "...",
+            "lighting": "...",
+            "color_palette": "...",
+            "lens_type": "...",
+            "camera_movement": "...",
+            "emotional_tone": "...",
+            "visual_style": "...",
+            "action_cues": ["...", "..."]
+        }
+        """
+        
+        let userPrompt = "Analyze this scene cinematically:\n\n\(scene)"
+        
+        do {
+            let response = try await service.sendRequest(
+                systemPrompt: systemPrompt,
+                userPrompt: userPrompt,
+                temperature: 0.3,
+                maxTokens: 1500
+            )
+            
+            let jsonData = extractJSON(from: response)
+            let decoder = JSONDecoder()
+            let cinematicTaxonomy = try decoder.decode(CinematicTaxonomy.self, from: jsonData)
+            
+            await MainActor.run {
+                taxonomy = cinematicTaxonomy
+                isProcessing = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+                isProcessing = false
+            }
+        }
+    }
+    
+    private func extractJSON(from response: String) -> Data {
+        if let jsonStart = response.firstIndex(of: "{"),
+           let jsonEnd = response.lastIndex(of: "}") {
+            let jsonString = String(response[jsonStart...jsonEnd])
+            return jsonString.data(using: .utf8) ?? Data()
+        }
+        return response.data(using: .utf8) ?? Data()
+    }
+}
+
+// MARK: - MODULE 5: Continuity Anchor Module
+struct ContinuityAnchor: Codable, Identifiable {
+    let id = UUID()
+    let characterName: String
+    let visualDescription: String
+    let costumes: [String]
+    let props: [String]
+    let appearanceNotes: String
+    let sceneReferences: [Int]
+    
+    enum CodingKeys: String, CodingKey {
+        case characterName = "character_name"
+        case visualDescription = "visual_description"
+        case costumes
+        case props
+        case appearanceNotes = "appearance_notes"
+        case sceneReferences = "scene_references"
+    }
+}
+
+class ContinuityAnchorModule: ObservableObject {
+    @Published var isProcessing = false
+    @Published var anchors: [ContinuityAnchor] = []
+    @Published var errorMessage: String?
+    
+    private let service: AIServiceProtocol
+    
+    init(service: AIServiceProtocol = DeepSeekService()) {
+        self.service = service
+    }
+    
+    func generateAnchors(story: String) async {
+        await MainActor.run {
+            isProcessing = true
+            errorMessage = nil
+            anchors = []
+        }
+        
+        let systemPrompt = """
+        You are a script supervisor specializing in continuity. Extract continuity anchors for all characters:
+        
+        For each character, provide:
+        - character_name: Full character name
+        - visual_description: Detailed physical appearance (height, build, features, hair, etc.)
+        - costumes: Array of clothing/costume descriptions worn throughout
+        - props: Array of props associated with this character
+        - appearance_notes: Any important visual continuity notes
+        - scene_references: Array of scene numbers where this character appears
+        
+        Return ONLY valid JSON array:
+        [
+            {
+                "character_name": "...",
+                "visual_description": "...",
+                "costumes": ["..."],
+                "props": ["..."],
+                "appearance_notes": "...",
+                "scene_references": [1, 3, 5]
+            }
+        ]
+        """
+        
+        let userPrompt = "Generate continuity anchors for this story:\n\n\(story)"
+        
+        do {
+            let response = try await service.sendRequest(
+                systemPrompt: systemPrompt,
+                userPrompt: userPrompt,
+                temperature: 0.3,
+                maxTokens: 3000
+            )
+            
+            let jsonData = extractJSON(from: response)
+            let decoder = JSONDecoder()
+            let continuityAnchors = try decoder.decode([ContinuityAnchor].self, from: jsonData)
+            
+            await MainActor.run {
+                anchors = continuityAnchors
+                isProcessing = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+                isProcessing = false
+            }
+        }
+    }
+    
+    private func extractJSON(from response: String) -> Data {
+        if let jsonStart = response.firstIndex(of: "["),
+           let jsonEnd = response.lastIndex(of: "]") {
+            let jsonString = String(response[jsonStart...jsonEnd])
+            return jsonString.data(using: .utf8) ?? Data()
+        }
+        return response.data(using: .utf8) ?? Data()
+    }
+}
+
+// MARK: - MODULE 6: Prompt Packaging Module
+struct PackagedPrompt: Codable {
+    let title: String
+    let timestamp: Date
+    let segments: [SegmentPackage]
+    let metadata: Metadata
+    
+    struct SegmentPackage: Codable {
+        let index: Int
+        let prompt: String
+        let cinematicTags: CinematicTaxonomy?
+        let continuityRefs: [String]
+        let duration: Int
+    }
+    
+    struct Metadata: Codable {
+        let totalSegments: Int
+        let totalDuration: Int
+        let characters: [String]
+        let locations: [String]
+        let exportFormat: String
+    }
+}
+
+class PromptPackagingModule: ObservableObject {
+    @Published var isProcessing = false
+    @Published var packagedPrompt: PackagedPrompt?
+    @Published var errorMessage: String?
+    @Published var savedToScreenplay = false
+    
+    func packagePrompts(
+        title: String,
+        segments: [PromptSegment],
+        taxonomies: [CinematicTaxonomy],
+        anchors: [ContinuityAnchor]
+    ) async {
+        await MainActor.run {
+            isProcessing = true
+            errorMessage = nil
+            savedToScreenplay = false
+        }
+        
+        // Package all data together
+        let segmentPackages = segments.enumerated().map { index, segment in
+            PackagedPrompt.SegmentPackage(
+                index: segment.index,
+                prompt: segment.content,
+                cinematicTags: index < taxonomies.count ? taxonomies[index] : nil,
+                continuityRefs: anchors.filter { anchor in
+                    anchor.sceneReferences.contains(segment.index)
+                }.map { $0.characterName },
+                duration: segment.duration
+            )
+        }
+        
+        let allCharacters = Array(Set(segments.flatMap { $0.characters }))
+        let allSettings = Array(Set(segments.map { $0.setting }))
+        let totalDuration = segments.reduce(0) { $0 + $1.duration }
+        
+        let metadata = PackagedPrompt.Metadata(
+            totalSegments: segments.count,
+            totalDuration: totalDuration,
+            characters: allCharacters,
+            locations: allSettings,
+            exportFormat: "screenplay"
+        )
+        
+        let package = PackagedPrompt(
+            title: title,
+            timestamp: Date(),
+            segments: segmentPackages,
+            metadata: metadata
+        )
+        
+        await MainActor.run {
+            packagedPrompt = package
+            isProcessing = false
+        }
+        
+        // Save to screenplay format
+        await saveToScreenplay(package)
+    }
+    
+    private func saveToScreenplay(_ package: PackagedPrompt) async {
+        // Generate screenplay format
+        var screenplay = """
+        \(package.title.uppercased())
+        
+        Generated: \(package.timestamp.formatted())
+        
+        CAST:
+        \(package.metadata.characters.map { "- \($0)" }.joined(separator: "\n"))
+        
+        LOCATIONS:
+        \(package.metadata.locations.map { "- \($0)" }.joined(separator: "\n"))
+        
+        TOTAL DURATION: \(package.metadata.totalDuration) seconds
+        SEGMENTS: \(package.metadata.totalSegments)
+        
+        ---
+        
+        
+        """
+        
+        for segment in package.segments {
+            screenplay += """
+            
+            SEGMENT \(segment.index) [\(segment.duration)s]
+            
+            \(segment.prompt)
+            
+            """
+            
+            if let tags = segment.cinematicTags {
+                screenplay += """
+                
+                CINEMATIC NOTES:
+                Shot: \(tags.shotType) | Angle: \(tags.cameraAngle)
+                Lighting: \(tags.lighting) | Movement: \(tags.cameraMovement)
+                Tone: \(tags.emotionalTone)
+                
+                """
+            }
+            
+            if !segment.continuityRefs.isEmpty {
+                screenplay += """
+                CONTINUITY: \(segment.continuityRefs.joined(separator: ", "))
+                
+                """
+            }
+            
+            screenplay += "---\n\n"
+        }
+        
+        // Save to file (in production, use proper file management)
+        do {
+            let filename = "\(package.title.replacingOccurrences(of: " ", with: "_"))_\(Date().timeIntervalSince1970).txt"
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = documentsPath.appendingPathComponent(filename)
+            
+            try screenplay.write(to: fileURL, atomically: true, encoding: .utf8)
+            
+            await MainActor.run {
+                savedToScreenplay = true
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = "Failed to save screenplay: \(error.localizedDescription)"
+            }
+        }
+    }
+}
+
+// MARK: - Pipeline Coordinator (Runs all modules in sequence)
+class DirectorStudioPipeline: ObservableObject {
+    @Published var currentStep = 0
+    @Published var isRunning = false
+    @Published var completedSteps: Set<Int> = []
+    @Published var errorMessage: String?
+    
+    let rewordingModule: RewordingModule
+    let storyAnalyzer: StoryAnalyzerModule
+    let segmentationModule: PromptSegmentationModule
+    let taxonomyModule: CinematicTaxonomyModule
+    let continuityModule: ContinuityAnchorModule
+    let packagingModule: PromptPackagingModule
+    
+    init() {
+        let service = DeepSeekService()
+        rewordingModule = RewordingModule(service: service)
+        storyAnalyzer = StoryAnalyzerModule(service: service)
+        segmentationModule = PromptSegmentationModule(service: service)
+        taxonomyModule = CinematicTaxonomyModule(service: service)
+        continuityModule = ContinuityAnchorModule(service: service)
+        packagingModule = PromptPackagingModule()
+    }
+    
+    func runFullPipeline(
+        story: String,
+        rewordType: RewordingType? = nil,
+        projectTitle: String = "Untitled Project"
+    ) async {
+        await MainActor.run {
+            isRunning = true
+            currentStep = 0
+            completedSteps.removeAll()
+            errorMessage = nil
+        }
+        
+        var processedStory = story
+        
+        // Step 1: Rewording (optional)
+        if let rewordType = rewordType {
+            await updateStep(1, "Rewording story...")
+            await rewordingModule.reword(text: story, type: rewordType)
+            if let result = await MainActor.run(body: { rewordingModule.result }), !result.isEmpty {
+                processedStory = result
+                await markStepComplete(1)
+            } else {
+                await setError("Rewording failed")
+                return
+            }
+        } else {
+            await markStepComplete(1)
+        }
+        
+        // Step 2: Story Analysis
+        await updateStep(2, "Analyzing story structure...")
+        await storyAnalyzer.analyze(story: processedStory)
+        if await MainActor.run(body: { storyAnalyzer.analysis }) != nil {
+            await markStepComplete(2)
+        } else {
+            await setError("Story analysis failed")
+            return
+        }
+        
+        // Step 3: Prompt Segmentation
+        await updateStep(3, "Segmenting into prompts...")
+        await segmentationModule.segment(story: processedStory)
+        let segments = await MainActor.run { segmentationModule.segments }
+        if !segments.isEmpty {
+            await markStepComplete(3)
+        } else {
+            await setError("Segmentation failed")
+            return
+        }
+        
+        // Step 4: Cinematic Taxonomy (for each segment)
+        await updateStep(4, "Analyzing cinematography...")
+        var taxonomies: [CinematicTaxonomy] = []
+        
+        for segment in segments {
+            await taxonomyModule.analyzeCinematic(scene: segment.content)
+            if let taxonomy = await MainActor.run(body: { taxonomyModule.taxonomy }) {
+                taxonomies.append(taxonomy)
+            }
+        }
+        
+        if taxonomies.count == segments.count {
+            await markStepComplete(4)
+        } else {
+            await setError("Taxonomy analysis incomplete")
+            return
+        }
+        
+        // Step 5: Continuity Anchors
+        await updateStep(5, "Generating continuity anchors...")
+        await continuityModule.generateAnchors(story: processedStory)
+        if !await MainActor.run(body: { continuityModule.anchors }).isEmpty {
+            await markStepComplete(5)
+        } else {
+            await setError("Continuity generation failed")
+            return
+        }
+        
+        // Step 6: Package & Save
+        await updateStep(6, "Packaging screenplay...")
+        let anchors = await MainActor.run { continuityModule.anchors }
+        await packagingModule.packagePrompts(
+            title: projectTitle,
+            segments: segments,
+            taxonomies: taxonomies,
+            anchors: anchors
+        )
+        
+        if await MainActor.run(body: { packagingModule.savedToScreenplay }) {
+            await markStepComplete(6)
+        } else {
+            await setError("Packaging failed")
+            return
+        }
+        
+        await MainActor.run {
+            isRunning = false
+        }
+    }
+    
+    private func updateStep(_ step: Int, _ message: String) async {
+        await MainActor.run {
+            currentStep = step
+        }
+    }
+    
+    private func markStepComplete(_ step: Int) async {
+        await MainActor.run {
+            completedSteps.insert(step)
+        }
+    }
+    
+    private func setError(_ message: String) async {
+        await MainActor.run {
+            errorMessage = message
+            isRunning = false
+        }
+    }
+}
+
+// MARK: - Enhanced UI with Pipeline View
+struct DirectorStudioModulesView: View {
+    @StateObject private var pipeline = DirectorStudioPipeline()
+    @State private var selectedRewordType: RewordingType?
+    @State private var inputText = ""
+    @State private var projectTitle = "My Story"
+    @State private var showResults = false
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Input Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Project Title")
+                            .font(.headline)
+                        TextField("Enter title", text: $projectTitle)
+                            .textFieldStyle(.roundedBorder)
+                        
+                        Text("Story Input")
+                            .font(.headline)
+                        TextEditor(text: $inputText)
+                            .frame(height: 200)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray.opacity(0.3))
+                            )
+                        
+                        Text("Rewording Type (Optional)")
+                            .font(.headline)
+                        Picker("Transformation", selection: $selectedRewordType) {
+                            Text("None").tag(nil as RewordingType?)
+                            ForEach(RewordingType.allCases) { type in
+                                Text(type.rawValue).tag(type as RewordingType?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    
+                    // Pipeline Button
+                    Button(action: {
+                        Task {
+                            await pipeline.runFullPipeline(
+                                story: inputText,
+                                rewordType: selectedRewordType,
+                                projectTitle: projectTitle
+                            )
+                            showResults = true
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "play.circle.fill")
+                            Text("Run Full Pipeline")
+                                .fontWeight(.semibold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [Color.blue, Color.purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                    }
+                    .disabled(pipeline.isRunning || inputText.isEmpty)
+                    
+                    // Pipeline Progress
+                    if pipeline.isRunning || !pipeline.completedSteps.isEmpty {
+                        VStack(spacing: 16) {
+                            Text("Pipeline Progress")
+                                .font(.headline)
+                            
+                            PipelineStepView(
+                                number: 1,
+                                title: "Rewording",
+                                isActive: pipeline.currentStep == 1,
+                                isComplete: pipeline.completedSteps.contains(1)
+                            )
+                            
+                            PipelineStepView(
+                                number: 2,
+                                title: "Story Analysis",
+                                isActive: pipeline.currentStep == 2,
+                                isComplete: pipeline.completedSteps.contains(2)
+                            )
+                            
+                            PipelineStepView(
+                                number: 3,
+                                title: "Prompt Segmentation",
+                                isActive: pipeline.currentStep == 3,
+                                isComplete: pipeline.completedSteps.contains(3)
+                            )
+                            
+                            PipelineStepView(
+                                number: 4,
+                                title: "Cinematic Taxonomy",
+                                isActive: pipeline.currentStep == 4,
+                                isComplete: pipeline.completedSteps.contains(4)
+                            )
+                            
+                            PipelineStepView(
+                                number: 5,
+                                title: "Continuity Anchors",
+                                isActive: pipeline.currentStep == 5,
+                                isComplete: pipeline.completedSteps.contains(5)
+                            )
+                            
+                            PipelineStepView(
+                                number: 6,
+                                title: "Package Screenplay",
+                                isActive: pipeline.currentStep == 6,
+                                isComplete: pipeline.completedSteps.contains(6)
+                            )
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(12)
+                    }
+                    
+                    // Error Display
+                    if let error = pipeline.errorMessage {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text(error)
+                        }
+                        .foregroundColor(.red)
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    
+                    // Results Section
+                    if showResults && pipeline.completedSteps.count == 6 {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label("Pipeline Complete!", systemImage: "checkmark.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.green)
+                            
+                            if let analysis = pipeline.storyAnalyzer.analysis {
+                                Divider()
+                                Text("Story Analysis")
+                                    .font(.headline)
+                                Text("• \(analysis.characters.count) characters")
+                                Text("• \(analysis.locations.count) locations")
+                                Text("• \(analysis.scenes.count) scenes")
+                            }
+                            
+                            if !pipeline.segmentationModule.segments.isEmpty {
+                                Divider()
+                                Text("Prompt Segments")
+                                    .font(.headline)
+                                Text("• \(pipeline.segmentationModule.segments.count) segments generated")
+                                Text("• Total duration: \(pipeline.segmentationModule.segments.reduce(0) { $0 + $1.duration })s")
+                            }
+                            
+                            if !pipeline.continuityModule.anchors.isEmpty {
+                                Divider()
+                                Text("Continuity Anchors")
+                                    .font(.headline)
+                                Text("• \(pipeline.continuityModule.anchors.count) character anchors")
+                            }
+                            
+                            if pipeline.packagingModule.savedToScreenplay {
+                                Divider()
+                                Label("Saved to Screenplay", systemImage: "doc.text.fill")
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        .padding()
+                        .background(Color.green.opacity(0.1))
+                        .cornerRadius(12)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("DirectorStudio AI")
+            .navigationBarTitleDisplayMode(.large)
+        }
+    }
+}
+
+struct PipelineStepView: View {
+    let number: Int
+    let title: String
+    let isActive: Bool
+    let isComplete: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(isComplete ? Color.green : isActive ? Color.blue : Color.gray.opacity(0.3))
+                    .frame(width: 32, height: 32)
+                
+                if isComplete {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                } else if isActive {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(0.7)
+                } else {
+                    Text("\(number)")
+                        .foregroundColor(.white)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
+            }
+            
+            Text(title)
+                .font(.body)
+                .foregroundColor(isActive || isComplete ? .primary : .secondary)
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - API Key Setup View
+struct APIKeySetupView: View {
+    @AppStorage("deepseek_api_key") private var apiKey = ""
+    @State private var showingSuccess = false
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section {
+                    SecureField("Enter DeepSeek API Key", text: $apiKey)
+                    
+                    if !apiKey.isEmpty {
+                        Label("API Key Saved", systemImage: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                    }
+                } header: {
+                    Text("DeepSeek Configuration")
+                } footer: {
+                    Text("Your API key is stored securely on device. Get your key from deepseek.com")
+                }
+                
+                Section {
+                    Link("Get DeepSeek API Key", destination: URL(string: "https://platform.deepseek.com")!)
+                        .foregroundColor(.blue)
+                }
+            }
+            .navigationTitle("API Setup")
+        }
+    }
+}
