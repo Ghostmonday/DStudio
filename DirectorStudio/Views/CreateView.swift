@@ -206,11 +206,29 @@ struct CreateView: View {
                 .cornerRadius(16)
                 .shadow(color: .purple.opacity(0.5), radius: 10)
             }
-            .disabled(storyInput.isEmpty || pipeline.isRunning)
+            .disabled(storyInput.isEmpty || pipeline.isRunning || !DeepSeekConfig.hasValidAPIKey())
             .padding(.horizontal)
             .padding(.top, 8)
             
-            if !storyInput.isEmpty && !pipeline.isRunning {
+            if !DeepSeekConfig.hasValidAPIKey() {
+                VStack(spacing: 8) {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                        Text("API Key Required")
+                            .fontWeight(.semibold)
+                            .foregroundColor(.orange)
+                    }
+                    Text("Please configure your DeepSeek API key in Settings to use AI features.")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(12)
+                .padding(.horizontal)
+            } else if !storyInput.isEmpty && !pipeline.isRunning {
                 Text("This will run all 6 AI modules")
                     .font(.caption)
                     .foregroundColor(.gray)

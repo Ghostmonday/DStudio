@@ -27,6 +27,11 @@ struct MainTabView: View {
                             Label("Library", systemImage: "square.grid.2x2.fill")
                         }
                         .foregroundColor(selectedTab == 2 ? .purple : .primary)
+                        
+                        Button(action: { selectedTab = 3 }) {
+                            Label("Settings", systemImage: "gear")
+                        }
+                        .foregroundColor(selectedTab == 3 ? .purple : .primary)
                     }
                     .navigationTitle("DirectorStudio")
                 } detail: {
@@ -52,6 +57,12 @@ struct MainTabView: View {
                             Label("Library", systemImage: "square.grid.2x2.fill")
                         }
                         .tag(2)
+                    
+                    SettingsView()
+                        .tabItem {
+                            Label("Settings", systemImage: "gear")
+                        }
+                        .tag(3)
                 }
                 .tint(.purple)
             }
@@ -64,6 +75,7 @@ struct MainTabView: View {
         case 0: CreateView()
         case 1: StudioView()
         case 2: LibraryView()
+        case 3: SettingsView()
         default: CreateView()
         }
     }

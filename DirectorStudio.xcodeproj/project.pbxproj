@@ -40,6 +40,9 @@
 		1A000043 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000044 /* ShareSheet.swift */; };
 		1A000045 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000046 /* OnboardingView.swift */; };
 		1A000047 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000048 /* OnboardingPage.swift */; };
+		1A000049 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004A /* KeychainService.swift */; };
+		1A00004B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004C /* SettingsView.swift */; };
+		1A00004E /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004F /* SecretsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,7 +79,10 @@
 		1A000044 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		1A000046 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		1A000048 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
-		1A000049 /* DirectorStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DirectorStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A00004A /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		1A00004C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		1A00004F /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
+		1A00005C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				1A000052 /* DirectorStudio */,
+				1A00005B /* Configuration */,
 				1A000053 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -119,7 +126,6 @@
 		1A000053 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1A000049 /* DirectorStudio.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -142,6 +148,8 @@
 				1A000014 /* AIServiceProtocol.swift */,
 				1A000016 /* AIModuleError.swift */,
 				1A000018 /* DeepSeekService.swift */,
+				1A00004A /* KeychainService.swift */,
+				1A00004F /* SecretsManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -167,6 +175,7 @@
 				1A000030 /* CreateView.swift */,
 				1A000032 /* StudioView.swift */,
 				1A000034 /* LibraryView.swift */,
+				1A00004C /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -191,6 +200,14 @@
 				1A000044 /* ShareSheet.swift */,
 			);
 			path = Sheets;
+			sourceTree = "<group>";
+		};
+		1A00005B /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				1A00005C /* Secrets.xcconfig */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 		1A000060 /* Onboarding */ = {
@@ -227,7 +244,6 @@
 			);
 			name = DirectorStudio;
 			productName = DirectorStudio;
-			productReference = 1A000049 /* DirectorStudio.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -311,6 +327,9 @@
 				1A000043 /* ShareSheet.swift in Sources */,
 				1A000045 /* OnboardingView.swift in Sources */,
 				1A000047 /* OnboardingPage.swift in Sources */,
+				1A000049 /* KeychainService.swift in Sources */,
+				1A00004B /* SettingsView.swift in Sources */,
+				1A00004E /* SecretsManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,6 +338,7 @@
 /* Begin XCBuildConfiguration section */
 		1A000068 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -382,6 +402,7 @@
 		};
 		1A000069 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -438,10 +459,12 @@
 		};
 		1A00006A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"DirectorStudio/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
@@ -467,10 +490,12 @@
 		};
 		1A00006B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"DirectorStudio/Preview Content\"";
 				ENABLE_PREVIEWS = YES;

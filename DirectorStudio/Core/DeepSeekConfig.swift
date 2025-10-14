@@ -4,8 +4,20 @@ import Foundation
 struct DeepSeekConfig {
     static let baseURL = "https://api.deepseek.com/v1/chat/completions"
     static let model = "deepseek-chat"
+    
+    // MARK: - Secure API Key Management
     static var apiKey: String {
-        // TODO: Replace with secure keychain storage in production
-        return UserDefaults.standard.string(forKey: "deepseek_api_key") ?? ""
+        return SecretsManager.deepSeekAPIKey
+    }
+    
+    static func hasValidAPIKey() -> Bool {
+        return !apiKey.isEmpty
+    }
+    
+    // MARK: - Configuration Validation
+    static func validateConfiguration() -> Bool {
+        let isValid = SecretsManager.validateConfiguration()
+        SecretsManager.performSecurityCheck()
+        return isValid
     }
 }
