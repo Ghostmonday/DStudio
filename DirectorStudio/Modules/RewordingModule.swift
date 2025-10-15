@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import os.log
 
 // MARK: - MODULE 1: Rewording Module
 enum RewordingType: String, CaseIterable, Identifiable {
@@ -39,12 +40,16 @@ class RewordingModule: ObservableObject {
     @Published var errorMessage: String?
     
     private let service: AIServiceProtocol
+    private let logger = Logger(subsystem: "net.neuraldraft.DirectorStudio", category: "RewordingModule")
     
     init(service: AIServiceProtocol = DeepSeekService()) {
         self.service = service
     }
     
     func reword(text: String, type: RewordingType) async {
+        logger.info("🔄 Starting rewording with type: \(type.rawValue)")
+        logger.info("📝 Input text: \(text.prefix(100))...")
+        
         await MainActor.run {
             isProcessing = true
             errorMessage = nil
@@ -60,11 +65,15 @@ class RewordingModule: ObservableObject {
                 maxTokens: 3000
             )
             
+            logger.info("✅ Rewording successful: \(response.prefix(100))...")
+            
             await MainActor.run {
                 result = response
                 isProcessing = false
             }
         } catch {
+            logger.error("❌ Rewording failed: \(error.localizedDescription)")
+            
             await MainActor.run {
                 errorMessage = error.localizedDescription
                 isProcessing = false

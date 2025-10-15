@@ -1,5 +1,6 @@
 import SwiftUI
 import AVKit
+import os.log
 
 // MARK: - App Entry Point with Mac Catalyst Support
 @main
@@ -7,6 +8,15 @@ struct DirectorStudioApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var pipeline = DirectorStudioPipeline()
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    
+    private let logger = Logger(subsystem: "net.neuraldraft.DirectorStudio", category: "App")
+    
+    init() {
+        // Validate API key configuration on app startup
+        logger.info("🚀 DirectorStudio app initializing...")
+        let isValid = DeepSeekConfig.validateConfiguration()
+        logger.info("🔍 API key validation result: \(isValid ? "SUCCESS" : "FAILED")")
+    }
     
     var body: some Scene {
         WindowGroup {

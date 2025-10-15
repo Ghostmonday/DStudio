@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Configuration
 struct DeepSeekConfig {
-    static let baseURL = "https://api.deepseek.com/v1/chat/completions"
+    static let baseURL = "https://api.deepseek.com/chat/completions"
     static let model = "deepseek-chat"
     
     // MARK: - Secure API Key Management

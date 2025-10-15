@@ -68,3 +68,4 @@ fastlane/test_output
 
 # Code Injection
 iOSInjectionProject/
+DirectorStudio/Secrets.xcconfig

@@ -15,37 +15,29 @@ struct OnboardingView: View {
             )
             .ignoresSafeArea()
             
-            TabView(selection: $currentPage) {
-                OnboardingPage(
-                    icon: "film.stack.fill",
-                    title: "Welcome to DirectorStudio",
-                    description: "Transform your stories into cinematic video prompts with AI"
-                ).tag(0)
+            VStack {
+                Text("DirectorStudio")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding()
                 
-                OnboardingPage(
-                    icon: "wand.and.stars",
-                    title: "Intelligent Rewording",
-                    description: "Modernize language, improve grammar, and restyle your narrative"
-                ).tag(1)
+                Text("Welcome to DirectorStudio")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .padding()
                 
-                OnboardingPage(
-                    icon: "camera.aperture",
-                    title: "Cinematic Taxonomy",
-                    description: "Automatically add camera angles, lighting, and shot types"
-                ).tag(2)
-                
-                OnboardingPage(
-                    icon: "rectangle.split.3x1",
-                    title: "Smart Segmentation",
-                    description: "Break your story into AI-ready video prompts",
-                    isLast: true,
-                    action: { hasSeenOnboarding = true }
-                ).tag(3)
+                Button("Get Started") {
+                    hasSeenOnboarding = true
+                }
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.purple)
+                .foregroundColor(.white)
+                .cornerRadius(16)
+                .padding(.horizontal, 40)
             }
-            #if os(iOS)
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
-            #endif
         }
     }
 }

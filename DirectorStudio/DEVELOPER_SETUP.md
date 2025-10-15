@@ -22,7 +22,7 @@ DEEPSEEK_API_KEY = "sk-your-actual-deepseek-api-key-here"
 2. Select **Run → Arguments → Environment Variables**
 3. Add:
    - Name: `DEEPSEEK_API_KEY`
-   - Value: `sk-your-actual-deepseek-api-key-here`
+   - Value: `sk-3ca8ee2e77024497bc4a0e6a04836582`
 
 ### Getting Your DeepSeek API Key
 

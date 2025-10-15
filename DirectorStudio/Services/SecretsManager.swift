@@ -1,7 +1,11 @@
 import Foundation
+import os.log
 
 // MARK: - Secure Secrets Manager
 class SecretsManager {
+    
+    // MARK: - Logging
+    private static let logger = Logger(subsystem: "net.neuraldraft.DirectorStudio", category: "SecretsManager")
     
     // MARK: - Build Configuration Keys
     private static let deepSeekKeyName = "DEEPSEEK_API_KEY"
@@ -9,10 +13,21 @@ class SecretsManager {
     // MARK: - API Key Retrieval
     static var deepSeekAPIKey: String {
         // Method 1: Try build settings first (from .xcconfig)
+        logger.info("🔍 Checking for API key in Info.plist...")
         if let buildKey = Bundle.main.object(forInfoDictionaryKey: deepSeekKeyName) as? String,
            !buildKey.isEmpty && buildKey != "YOUR_DEEPSEEK_API_KEY_HERE" {
+            logger.info("✅ Found API key in Info.plist: \(String(buildKey.prefix(10)))...")
             return buildKey
         }
+        logger.error("❌ No API key found in Info.plist")
+        
+        // Method 1.5: Try build settings directly
+        if let buildSettingsKey = Bundle.main.object(forInfoDictionaryKey: "DEEPSEEK_API_KEY") as? String,
+           !buildSettingsKey.isEmpty && buildSettingsKey != "YOUR_DEEPSEEK_API_KEY_HERE" {
+            logger.info("✅ Found API key in build settings: \(String(buildSettingsKey.prefix(10)))...")
+            return buildSettingsKey
+        }
+        logger.error("❌ No API key found in build settings")
         
         // Method 2: Fallback to environment variable (for development)
         if let envKey = ProcessInfo.processInfo.environment[deepSeekKeyName],
@@ -40,11 +55,13 @@ class SecretsManager {
     
     // MARK: - Validation
     static func validateConfiguration() -> Bool {
-        let hasKey = !deepSeekAPIKey.isEmpty
+        logger.info("🔍 Starting API key validation...")
+        let apiKey = deepSeekAPIKey
+        let hasKey = !apiKey.isEmpty
         if hasKey {
-            print("✅ DeepSeek API key configured securely")
+            logger.info("✅ DeepSeek API key configured securely: \(String(apiKey.prefix(10)))...")
         } else {
-            print("❌ DeepSeek API key not configured")
+            logger.error("❌ DeepSeek API key not configured")
         }
         return hasKey
     }

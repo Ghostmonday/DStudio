@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import os.log
 
 // MARK: - Pipeline Coordinator (Runs all modules in sequence)
 class DirectorStudioPipeline: ObservableObject {
@@ -7,6 +8,8 @@ class DirectorStudioPipeline: ObservableObject {
     @Published var isRunning = false
     @Published var completedSteps: Set<Int> = []
     @Published var errorMessage: String?
+    
+    private let logger = Logger(subsystem: "net.neuraldraft.DirectorStudio", category: "Pipeline")
     
     let rewordingModule: RewordingModule
     let storyAnalyzer: StoryAnalyzerModule
@@ -41,17 +44,26 @@ class DirectorStudioPipeline: ObservableObject {
         
         // Step 1: Rewording (optional)
         if let rewordType = rewordType {
+            logger.info("🔄 Starting rewording step with type: \(rewordType.rawValue)")
             await updateStep(1, "Rewording story...")
             await rewordingModule.reword(text: story, type: rewordType)
             let result = await MainActor.run { rewordingModule.result }
+            let errorMessage = await MainActor.run { rewordingModule.errorMessage }
+            
+            logger.info("📝 Rewording result length: \(result.count)")
+            logger.info("❌ Rewording error: \(errorMessage ?? "none")")
+            
             if !result.isEmpty {
+                logger.info("✅ Rewording successful")
                 processedStory = result
                 await markStepComplete(1)
             } else {
-                await setError("Rewording failed")
+                logger.error("❌ Rewording failed - empty result")
+                await setError("Rewording failed: \(errorMessage ?? "Unknown error")")
                 return
             }
         } else {
+            logger.info("⏭️ Skipping rewording step (no type selected)")
             await markStepComplete(1)
         }
         
