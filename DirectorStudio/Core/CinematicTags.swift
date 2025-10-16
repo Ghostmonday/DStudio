@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Cinematic Taxonomy Model
-struct CinematicTaxonomy: Codable {
+public struct CinematicTaxonomy: Codable {
     let shotType: String
     let cameraAngle: String
     let framing: String

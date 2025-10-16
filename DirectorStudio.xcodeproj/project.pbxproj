@@ -43,6 +43,20 @@
 		1A000049 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004A /* KeychainService.swift */; };
 		1A00004B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004C /* SettingsView.swift */; };
 		1A00004E /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004F /* SecretsManager.swift */; };
+		1A000070 /* SceneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00006F /* SceneModel.swift */; };
+		1A000072 /* APIKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000071 /* APIKeyManager.swift */; };
+		1A000074 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000073 /* AuthService.swift */; };
+		1A000076 /* CreditWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000075 /* CreditWallet.swift */; };
+		1A000078 /* FirstClipGrantService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000077 /* FirstClipGrantService.swift */; };
+		1A00007A /* LedgerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000079 /* LedgerAPI.swift */; };
+		1A00007C /* SoraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00007B /* SoraService.swift */; };
+		1A00007E /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00007D /* StoreManager.swift */; };
+		1A000080 /* ContinuityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00007F /* ContinuityEngine.swift */; };
+		1A000082 /* ClipPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000081 /* ClipPreviewCard.swift */; };
+		1A000084 /* ClaimIncludedClipSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000083 /* ClaimIncludedClipSheet.swift */; };
+		1A000086 /* PaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000085 /* PaywallSheet.swift */; };
+		1A000088 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000087 /* TimelineView.swift */; };
+		1A00008A /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000089 /* PersistenceController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -83,6 +97,21 @@
 		1A00004C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		1A00004F /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
 		1A00005C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		1A00006F /* SceneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModel.swift; sourceTree = "<group>"; };
+		1A000071 /* APIKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyManager.swift; sourceTree = "<group>"; };
+		1A000073 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		1A000075 /* CreditWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditWallet.swift; sourceTree = "<group>"; };
+		1A000077 /* FirstClipGrantService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstClipGrantService.swift; sourceTree = "<group>"; };
+		1A000079 /* LedgerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAPI.swift; sourceTree = "<group>"; };
+		1A00007B /* SoraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoraService.swift; sourceTree = "<group>"; };
+		1A00007D /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		1A00007F /* ContinuityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuityEngine.swift; sourceTree = "<group>"; };
+		1A000081 /* ClipPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipPreviewCard.swift; sourceTree = "<group>"; };
+		1A000083 /* ClaimIncludedClipSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimIncludedClipSheet.swift; sourceTree = "<group>"; };
+		1A000085 /* PaywallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallSheet.swift; sourceTree = "<group>"; };
+		1A000087 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		1A000089 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		1A00008B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +140,7 @@
 				1A000000 /* DirectorStudioApp.swift */,
 				1A000002 /* ContentView.swift */,
 				1A000004 /* Assets.xcassets */,
+				1A00008B /* Info.plist */,
 				1A000054 /* Core */,
 				1A000055 /* Services */,
 				1A000056 /* Modules */,
@@ -118,6 +148,7 @@
 				1A000058 /* Components */,
 				1A000059 /* Sheets */,
 				1A000060 /* Onboarding */,
+				1A00008D /* Persistence */,
 				1A000061 /* Preview Content */,
 			);
 			path = DirectorStudio;
@@ -138,6 +169,7 @@
 				1A00001A /* Project.swift */,
 				1A00001C /* PromptSegment.swift */,
 				1A00001E /* CinematicTags.swift */,
+				1A00006F /* SceneModel.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -150,6 +182,13 @@
 				1A000018 /* DeepSeekService.swift */,
 				1A00004A /* KeychainService.swift */,
 				1A00004F /* SecretsManager.swift */,
+				1A000071 /* APIKeyManager.swift */,
+				1A000073 /* AuthService.swift */,
+				1A000075 /* CreditWallet.swift */,
+				1A000077 /* FirstClipGrantService.swift */,
+				1A000079 /* LedgerAPI.swift */,
+				1A00007B /* SoraService.swift */,
+				1A00007D /* StoreManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -164,6 +203,7 @@
 				1A000028 /* ContinuityAnchorModule.swift */,
 				1A00002A /* PromptPackagingModule.swift */,
 				1A00002C /* DirectorStudioPipeline.swift */,
+				1A00007F /* ContinuityEngine.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -176,6 +216,7 @@
 				1A000032 /* StudioView.swift */,
 				1A000034 /* LibraryView.swift */,
 				1A00004C /* SettingsView.swift */,
+				1A000087 /* TimelineView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -188,6 +229,7 @@
 				1A00003A /* ModuleCard.swift */,
 				1A00003C /* Tag.swift */,
 				1A00003E /* PipelineStepView.swift */,
+				1A000081 /* ClipPreviewCard.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -198,6 +240,8 @@
 				1A000040 /* PipelineProgressSheet.swift */,
 				1A000042 /* ExportSheet.swift */,
 				1A000044 /* ShareSheet.swift */,
+				1A000083 /* ClaimIncludedClipSheet.swift */,
+				1A000085 /* PaywallSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -217,6 +261,14 @@
 				1A000048 /* OnboardingPage.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		1A00008D /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				1A000089 /* PersistenceController.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 		1A000061 /* Preview Content */ = {
@@ -330,6 +382,20 @@
 				1A000049 /* KeychainService.swift in Sources */,
 				1A00004B /* SettingsView.swift in Sources */,
 				1A00004E /* SecretsManager.swift in Sources */,
+				1A000070 /* SceneModel.swift in Sources */,
+				1A000072 /* APIKeyManager.swift in Sources */,
+				1A000074 /* AuthService.swift in Sources */,
+				1A000076 /* CreditWallet.swift in Sources */,
+				1A000078 /* FirstClipGrantService.swift in Sources */,
+				1A00007A /* LedgerAPI.swift in Sources */,
+				1A00007C /* SoraService.swift in Sources */,
+				1A00007E /* StoreManager.swift in Sources */,
+				1A000080 /* ContinuityEngine.swift in Sources */,
+				1A000082 /* ClipPreviewCard.swift in Sources */,
+				1A000084 /* ClaimIncludedClipSheet.swift in Sources */,
+				1A000086 /* PaywallSheet.swift in Sources */,
+				1A000088 /* TimelineView.swift in Sources */,
+				1A00008A /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

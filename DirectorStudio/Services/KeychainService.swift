@@ -3,9 +3,12 @@ import Security
 
 // MARK: - Keychain Service for Secure API Key Storage
 class KeychainService {
+    static let shared = KeychainService()
     
     private static let service = "com.directorstudio.app"
     private static let apiKeyAccount = "deepseek_api_key"
+    
+    private init() {}
     
     // MARK: - Save API Key
     static func saveAPIKey(_ apiKey: String) throws {

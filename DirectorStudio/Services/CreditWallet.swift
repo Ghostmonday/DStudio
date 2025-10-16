@@ -50,6 +50,10 @@ class CreditWallet: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        defer {
+            isLoading = false
+        }
+        
         do {
             let response = try await ledgerAPI.consumeCredit(authToken: authToken, amount: amount)
             
@@ -63,8 +67,6 @@ class CreditWallet: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
             throw error
-        } finally {
-            isLoading = false
         }
     }
     

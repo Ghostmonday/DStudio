@@ -2,14 +2,14 @@ import SwiftUI
 import AuthenticationServices
 
 // MARK: - Claim Included Clip Sheet
-struct ClaimIncludedClipSheet: View {
+public struct ClaimIncludedClipSheet: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var authService = AuthService()
     @StateObject private var firstClipService = FirstClipGrantService()
     @StateObject private var creditWallet = CreditWallet()
     @State private var showingSuccessAlert = false
     
-    var body: some View {
+    public var body: some View {
         NavigationStack {
             VStack(spacing: 32) {
                 Spacer()

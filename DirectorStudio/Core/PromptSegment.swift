@@ -1,8 +1,8 @@
 import Foundation
 
 // MARK: - Prompt Segment Model
-struct PromptSegment: Codable, Identifiable {
-    let id = UUID()
+public struct PromptSegment: Codable, Identifiable {
+    public let id = UUID()
     let index: Int
     let duration: Int // Target duration in seconds
     let content: String
@@ -16,6 +16,19 @@ struct PromptSegment: Codable, Identifiable {
     let location: String
     let props: [String]
     let tone: String
+    
+    public init(index: Int, duration: Int, content: String, characters: [String], setting: String, action: String, continuityNotes: String, location: String, props: [String], tone: String) {
+        self.index = index
+        self.duration = duration
+        self.content = content
+        self.characters = characters
+        self.setting = setting
+        self.action = action
+        self.continuityNotes = continuityNotes
+        self.location = location
+        self.props = props
+        self.tone = tone
+    }
     
     enum CodingKeys: String, CodingKey {
         case index, duration, content, characters, setting, action
@@ -33,24 +46,5 @@ struct PromptSegment: Codable, Identifiable {
             prompt: content,
             tone: tone
         )
-    }
-}
-
-// MARK: - Scene Model for Continuity Engine
-struct SceneModel: Codable, Identifiable, Equatable {
-    let id: Int
-    let location: String
-    let characters: [String]
-    let props: [String]
-    let prompt: String
-    let tone: String
-    
-    static func == (lhs: SceneModel, rhs: SceneModel) -> Bool {
-        return lhs.id == rhs.id &&
-               lhs.location == rhs.location &&
-               lhs.characters == rhs.characters &&
-               lhs.props == rhs.props &&
-               lhs.prompt == rhs.prompt &&
-               lhs.tone == rhs.tone
     }
 }

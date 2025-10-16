@@ -20,9 +20,15 @@ DerivedData
 project.xcworkspace
 
 # Sensitive Configuration Files
+Secrets.xcconfig
 DirectorStudio/Secrets.xcconfig
 *.xcconfig
 !Config.xcconfig
+
+# Supabase Environment Files
+backend/supabase/.env
+backend/.env
+.env*
 
 # API Keys and Secrets
 *.key

@@ -3,7 +3,7 @@ import SwiftUI
 
 // MARK: - First Clip Grant Service
 @MainActor
-class FirstClipGrantService: ObservableObject {
+public class FirstClipGrantService: ObservableObject {
     @Published var isClaiming = false
     @Published var claimError: String?
     @Published var hasClaimedFirstClip: Bool = false
@@ -23,6 +23,10 @@ class FirstClipGrantService: ObservableObject {
         
         isClaiming = true
         claimError = nil
+        
+        defer {
+            isClaiming = false
+        }
         
         do {
             let deviceId = getOrCreateDeviceId()
@@ -45,8 +49,6 @@ class FirstClipGrantService: ObservableObject {
         } catch {
             claimError = error.localizedDescription
             return false
-        } finally {
-            isClaiming = false
         }
     }
     

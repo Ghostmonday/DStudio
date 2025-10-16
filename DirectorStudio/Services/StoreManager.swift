@@ -52,6 +52,10 @@ class StoreManager: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        defer {
+            isLoading = false
+        }
+        
         do {
             let result = try await product.purchase()
             
@@ -76,8 +80,6 @@ class StoreManager: ObservableObject {
         } catch {
             errorMessage = "Purchase failed: \(error.localizedDescription)"
             return false
-        } finally {
-            isLoading = false
         }
     }
     
@@ -86,6 +88,10 @@ class StoreManager: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        defer {
+            isLoading = false
+        }
+        
         do {
             try await AppStore.sync()
             await updatePurchasedProducts()
@@ -93,8 +99,6 @@ class StoreManager: ObservableObject {
         } catch {
             errorMessage = "Failed to restore purchases: \(error.localizedDescription)"
             return false
-        } finally {
-            isLoading = false
         }
     }
     
@@ -114,7 +118,7 @@ class StoreManager: ObservableObject {
         purchasedProducts = purchased
     }
     
-    private func handleSuccessfulPurchase(_ transaction: Transaction) async {
+    private func handleSuccessfulPurchase(_ transaction: StoreKit.Transaction) async {
         // Get credit amount for this product
         guard let creditAmount = productCredits[transaction.productID] else {
             print("Unknown product ID: \(transaction.productID)")

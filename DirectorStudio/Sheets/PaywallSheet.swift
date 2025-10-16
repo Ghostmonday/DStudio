@@ -155,7 +155,7 @@ struct ProductCard: View {
                         .fontWeight(.bold)
                     
                     if creditAmount > 1 {
-                        Text("$\(String(format: "%.2f", product.price.doubleValue / Double(creditAmount)))/credit")
+                        Text("$\(String(format: "%.2f", NSDecimalNumber(decimal: product.price).doubleValue / Double(creditAmount)))/credit")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }

@@ -20,18 +20,16 @@ struct OnboardingView: View {
             TabView(selection: $currentPage) {
                 // Page 1: Welcome
                 OnboardingPage(
+                    icon: "film.stack",
                     title: "Welcome to DirectorStudio",
-                    subtitle: "Transform your stories into cinematic masterpieces",
-                    imageName: "film.stack",
                     description: "Create professional screenplays and generate AI-powered video clips with continuity validation."
                 )
                 .tag(0)
                 
                 // Page 2: Features
                 OnboardingPage(
+                    icon: "brain.head.profile",
                     title: "AI-Powered Creation",
-                    subtitle: "Intelligent story analysis and video generation",
-                    imageName: "brain.head.profile",
                     description: "Our AI analyzes your story structure, validates continuity, and generates stunning video clips using Sora AI."
                 )
                 .tag(1)
