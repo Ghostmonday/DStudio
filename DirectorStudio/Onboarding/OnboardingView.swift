@@ -4,7 +4,9 @@ import SwiftUI
 struct OnboardingView: View {
     @Binding var hasSeenOnboarding: Bool
     @EnvironmentObject var appState: AppState
+    @StateObject private var firstClipService = FirstClipGrantService()
     @State private var currentPage = 0
+    @State private var showClaimSheet = false
     
     var body: some View {
         ZStack {
@@ -15,29 +17,109 @@ struct OnboardingView: View {
             )
             .ignoresSafeArea()
             
-            VStack {
-                Text("DirectorStudio")
-                    .font(.largeTitle)
+            TabView(selection: $currentPage) {
+                // Page 1: Welcome
+                OnboardingPage(
+                    title: "Welcome to DirectorStudio",
+                    subtitle: "Transform your stories into cinematic masterpieces",
+                    imageName: "film.stack",
+                    description: "Create professional screenplays and generate AI-powered video clips with continuity validation."
+                )
+                .tag(0)
+                
+                // Page 2: Features
+                OnboardingPage(
+                    title: "AI-Powered Creation",
+                    subtitle: "Intelligent story analysis and video generation",
+                    imageName: "brain.head.profile",
+                    description: "Our AI analyzes your story structure, validates continuity, and generates stunning video clips using Sora AI."
+                )
+                .tag(1)
+                
+                // Page 3: Claim Clip
+                ClaimClipPage(
+                    hasClaimedFirstClip: firstClipService.hasClaimedFirstClip,
+                    onClaim: { showClaimSheet = true },
+                    onSkip: { hasSeenOnboarding = true }
+                )
+                .tag(2)
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+        }
+        .sheet(isPresented: $showClaimSheet) {
+            ClaimIncludedClipSheet()
+        }
+    }
+}
+
+// MARK: - Claim Clip Page
+struct ClaimClipPage: View {
+    let hasClaimedFirstClip: Bool
+    let onClaim: () -> Void
+    let onSkip: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+            
+            VStack(spacing: 24) {
+                Image(systemName: "gift.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(.yellow)
+                
+                Text("Your Purchase Includes 1 Clip")
+                    .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                    .padding()
+                    .multilineTextAlignment(.center)
                 
-                Text("Welcome to DirectorStudio")
-                    .font(.title2)
+                Text("Sign in with Apple to claim your included clip credit and start creating amazing videos.")
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+            
+            Spacer()
+            
+            VStack(spacing: 16) {
+                if !hasClaimedFirstClip {
+                    Button(action: onClaim) {
+                        HStack {
+                            Image(systemName: "applelogo")
+                            Text("Sign in with Apple")
+                        }
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.white)
+                        .foregroundColor(.black)
+                        .cornerRadius(16)
+                    }
+                    .padding(.horizontal, 40)
+                } else {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text("Clip Already Claimed")
+                            .fontWeight(.semibold)
+                    }
                     .foregroundColor(.white)
                     .padding()
-                
-                Button("Get Started") {
-                    hasSeenOnboarding = true
+                    .background(Color.green.opacity(0.2))
+                    .cornerRadius(12)
                 }
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.purple)
-                .foregroundColor(.white)
-                .cornerRadius(16)
-                .padding(.horizontal, 40)
+                
+                Button("Skip for now") {
+                    onSkip()
+                }
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.7))
             }
+            
+            Spacer()
         }
+        .padding()
     }
 }

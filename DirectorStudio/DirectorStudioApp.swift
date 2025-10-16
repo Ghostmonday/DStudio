@@ -7,6 +7,7 @@ import os.log
 struct DirectorStudioApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var pipeline = DirectorStudioPipeline()
+    @StateObject private var persistenceController = PersistenceController.shared
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     
     private let logger = Logger(subsystem: "net.neuraldraft.DirectorStudio", category: "App")
@@ -24,10 +25,12 @@ struct DirectorStudioApp: App {
                 MainTabView()
                     .environmentObject(appState)
                     .environmentObject(pipeline)
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
             } else {
                 OnboardingView(hasSeenOnboarding: $hasSeenOnboarding)
                     .environmentObject(appState)
                     .environmentObject(pipeline)
+                    .environment(\.managedObjectContext, persistenceController.container.viewContext)
             }
         }
         #if os(macOS)
