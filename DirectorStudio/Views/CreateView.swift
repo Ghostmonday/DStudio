@@ -118,7 +118,7 @@ struct CreateView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                         
-                        Text("Choose which AI features to use")
+                   Text("Choose which AI features to use") // BugScan: prompt engine UI noop
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
