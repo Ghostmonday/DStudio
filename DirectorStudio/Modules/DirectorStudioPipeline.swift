@@ -31,7 +31,10 @@ class DirectorStudioPipeline: ObservableObject {
     func runFullPipeline(
         story: String,
         rewordType: RewordingType? = nil,
-        projectTitle: String = "Untitled Project"
+        projectTitle: String = "Untitled Project",
+        enableTransform: Bool = true,
+        enableCinematic: Bool = true,
+        enableBreakdown: Bool = true
     ) async {
         await MainActor.run {
             isRunning = true
@@ -42,8 +45,8 @@ class DirectorStudioPipeline: ObservableObject {
         
         var processedStory = story
         
-        // Step 1: Rewording (optional)
-        if let rewordType = rewordType {
+        // Step 1: Rewording (conditional)
+        if enableTransform, let rewordType = rewordType {
             logger.info("🔄 Starting rewording step with type: \(rewordType.rawValue)")
             await updateStep(1, "Rewording story...")
             await rewordingModule.reword(text: story, type: rewordType)
@@ -63,7 +66,7 @@ class DirectorStudioPipeline: ObservableObject {
                 return
             }
         } else {
-            logger.info("⏭️ Skipping rewording step (no type selected)")
+            logger.info("⏭️ Skipping rewording step (\(enableTransform ? "no type selected" : "module disabled"))")
             await markStepComplete(1)
         }
         
@@ -77,33 +80,43 @@ class DirectorStudioPipeline: ObservableObject {
             return
         }
         
-        // Step 3: Prompt Segmentation
-        await updateStep(3, "Segmenting into prompts...")
-        await segmentationModule.segment(story: processedStory)
-        let segments = await MainActor.run { segmentationModule.segments }
-        if !segments.isEmpty {
-            await markStepComplete(3)
-        } else {
-            await setError("Segmentation failed")
-            return
-        }
-        
-        // Step 4: Cinematic Taxonomy (for each segment)
-        await updateStep(4, "Analyzing cinematography...")
-        var taxonomies: [CinematicTaxonomy] = []
-        
-        for segment in segments {
-            await taxonomyModule.analyzeCinematic(scene: segment.content)
-            if let taxonomy = await MainActor.run(body: { taxonomyModule.taxonomy }) {
-                taxonomies.append(taxonomy)
+        // Step 3: Prompt Segmentation (conditional)
+        var segments: [PromptSegment] = []
+        if enableBreakdown {
+            await updateStep(3, "Segmenting into prompts...")
+            await segmentationModule.segment(story: processedStory)
+            segments = await MainActor.run { segmentationModule.segments }
+            if !segments.isEmpty {
+                await markStepComplete(3)
+            } else {
+                await setError("Segmentation failed")
+                return
             }
+        } else {
+            logger.info("⏭️ Skipping segmentation step (module disabled)")
+            await markStepComplete(3)
         }
         
-        if taxonomies.count == segments.count {
-            await markStepComplete(4)
+        // Step 4: Cinematic Taxonomy (conditional)
+        var taxonomies: [CinematicTaxonomy] = []
+        if enableCinematic && !segments.isEmpty {
+            await updateStep(4, "Analyzing cinematography...")
+            for segment in segments {
+                await taxonomyModule.analyzeCinematic(scene: segment.content)
+                if let taxonomy = await MainActor.run(body: { taxonomyModule.taxonomy }) {
+                    taxonomies.append(taxonomy)
+                }
+            }
+            
+            if taxonomies.count == segments.count {
+                await markStepComplete(4)
+            } else {
+                await setError("Taxonomy analysis incomplete")
+                return
+            }
         } else {
-            await setError("Taxonomy analysis incomplete")
-            return
+            logger.info("⏭️ Skipping cinematic taxonomy step (\(enableCinematic ? "no segments" : "module disabled"))")
+            await markStepComplete(4)
         }
         
         // Step 5: Continuity Anchors

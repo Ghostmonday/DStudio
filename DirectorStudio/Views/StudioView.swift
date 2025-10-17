@@ -32,7 +32,7 @@ struct StudioView: View {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
-                if let project = appState.currentProject, !pipeline.segmentationModule.segments.isEmpty {
+                if let project = appState.currentProject {
                     ScrollView {
                         VStack(spacing: 20) {
                             // Project Header with Export Button
@@ -105,9 +105,43 @@ struct StudioView: View {
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
                             
-                            // Scene Segments
-                            ForEach(pipeline.segmentationModule.segments) { segment in
-                                SceneCardWithGeneration(segment: segment)
+                            // Debug Message for Short Input (with safe access)
+                            if let debugMessage = pipeline.segmentationModule.debugMessage, !debugMessage.isEmpty {
+                                HStack {
+                                    Image(systemName: "info.circle.fill")
+                                        .foregroundColor(.blue)
+                                    Text(debugMessage)
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(8)
+                            }
+                            
+                            // Scene Segments (with safe access)
+                            let segments = pipeline.segmentationModule.segments
+                            if !segments.isEmpty {
+                                ForEach(segments) { segment in
+                                    SceneCardWithGeneration(segment: segment)
+                                }
+                            } else {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "film.stack")
+                                        .font(.system(size: 48))
+                                        .foregroundColor(.gray)
+                                    
+                                    Text("No segments available")
+                                        .font(.headline)
+                                        .foregroundColor(.gray)
+                                    
+                                    Text("Run the pipeline from the Create tab to generate segments")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .padding()
                             }
                         }
                         .padding()

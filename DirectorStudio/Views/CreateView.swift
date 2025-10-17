@@ -8,6 +8,11 @@ struct CreateView: View {
     @State private var storyInput = ""
     @State private var selectedRewordType: RewordingType?
     @State private var showPipelineSheet = false
+    
+    // Module toggle states - default all ON
+    @State private var isTransformEnabled = true
+    @State private var isCinematicEnabled = true
+    @State private var isBreakdownEnabled = true
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
@@ -101,50 +106,77 @@ struct CreateView: View {
             }
             .padding(.horizontal)
             
-            // Module 1: Rewording Options
-            ModuleCard(
-                title: "Transform Your Words",
-                icon: "wand.and.stars",
-                description: "Modernize, refine grammar, or restyle your narrative"
-            ) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Transformation Type")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+            // AI Module Toggles
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.title2)
+                        .foregroundColor(.purple)
                     
-                    Picker("Type", selection: $selectedRewordType) {
-                        Text("None").tag(nil as RewordingType?)
-                        Divider()
-                        ForEach(RewordingType.allCases) { type in
-                            Text(type.rawValue).tag(type as RewordingType?)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("AI Modules")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        
+                        Text("Choose which AI features to use")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.horizontal)
+                
+                // Module Toggles
+                VStack(spacing: 12) {
+                    ModuleToggle(
+                        title: "Transform Your Words",
+                        icon: "wand.and.stars",
+                        description: "Modernize, refine grammar, or restyle your narrative",
+                        tooltip: "Uses AI to enhance your writing style and grammar",
+                        isEnabled: $isTransformEnabled
+                    )
+                    .padding(.horizontal)
+                    
+                    // Show transformation options only if enabled
+                    if isTransformEnabled {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Transformation Type")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                                .padding(.horizontal, 36) // Align with toggle content
+                            
+                            Picker("Type", selection: $selectedRewordType) {
+                                Text("None").tag(nil as RewordingType?)
+                                Divider()
+                                ForEach(RewordingType.allCases) { type in
+                                    Text(type.rawValue).tag(type as RewordingType?)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .tint(.purple)
+                            .padding(.horizontal, 36)
                         }
                     }
-                    .pickerStyle(.menu)
-                    .tint(.purple)
+                    
+                    ModuleToggle(
+                        title: "Cinematic Taxonomy",
+                        icon: "camera.aperture",
+                        description: "Add camera angles, lighting, and shot types",
+                        tooltip: "Analyzes scenes for optimal cinematography and visual composition",
+                        isEnabled: $isCinematicEnabled
+                    )
+                    .padding(.horizontal)
+                    
+                    ModuleToggle(
+                        title: "Prompt Breakdown",
+                        icon: "rectangle.split.3x1",
+                        description: "Break story into AI-ready video prompts",
+                        tooltip: "Segments your story into 15-second video clips for generation",
+                        isEnabled: $isBreakdownEnabled
+                    )
+                    .padding(.horizontal)
                 }
-            }
-            
-            // Module 2 & 3: Coming Soon Preview
-            ModuleCard(
-                title: "Cinematic Taxonomy",
-                icon: "camera.aperture",
-                description: "Add camera angles, lighting, and shot types",
-                comingSoon: false
-            ) {
-                Text("Automatically analyzes each scene")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            
-            ModuleCard(
-                title: "Prompt Breakdown",
-                icon: "rectangle.split.3x1",
-                description: "Break story into AI-ready video prompts",
-                comingSoon: false
-            ) {
-                Text("Segments your story into 15s scenes")
-                    .font(.caption)
-                    .foregroundColor(.gray)
             }
             
             // Run Pipeline Button
@@ -154,7 +186,10 @@ struct CreateView: View {
                     await pipeline.runFullPipeline(
                         story: storyInput,
                         rewordType: selectedRewordType,
-                        projectTitle: projectTitle.isEmpty ? "Untitled Project" : projectTitle
+                        projectTitle: projectTitle.isEmpty ? "Untitled Project" : projectTitle,
+                        enableTransform: isTransformEnabled,
+                        enableCinematic: isCinematicEnabled,
+                        enableBreakdown: isBreakdownEnabled
                     )
                     
                     // Save to app state
@@ -229,9 +264,11 @@ struct CreateView: View {
                 .cornerRadius(12)
                 .padding(.horizontal)
             } else if !storyInput.isEmpty && !pipeline.isRunning {
-                Text("This will run all 6 AI modules")
+                // Dynamic status message based on enabled modules
+                let enabledModules = [isTransformEnabled, isCinematicEnabled, isBreakdownEnabled].filter { $0 }.count
+                Text(enabledModules > 0 ? "This will run \(enabledModules) AI module\(enabledModules == 1 ? "" : "s")" : "No AI modules enabled")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(enabledModules > 0 ? .gray : .orange)
             }
         }
     }
