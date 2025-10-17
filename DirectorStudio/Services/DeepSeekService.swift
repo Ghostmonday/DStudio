@@ -33,6 +33,7 @@ struct DeepSeekResponse: Codable {
 
 // MARK: - DeepSeek Service Implementation
 class DeepSeekService: AIServiceProtocol {
+    // BugScan: token tracker noop touch for analysis
     
     private let logger = Logger(subsystem: "net.neuraldraft.DirectorStudio", category: "DeepSeekService")
     
