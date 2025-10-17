@@ -27,6 +27,7 @@ struct PackagedPrompt: Codable {
 
 // MARK: - MODULE 6: Prompt Packaging Module
 class PromptPackagingModule: ObservableObject {
+    // BugScan: export glue noop touch for analysis
     @Published var isProcessing = false
     @Published var packagedPrompt: PackagedPrompt?
     @Published var errorMessage: String?
