@@ -2,6 +2,7 @@ import Foundation
 
 // MARK: - Prompt Segment Model
 public struct PromptSegment: Codable, Identifiable {
+    // BugScan: character DNA noop touch for analysis
     public let id = UUID()
     let index: Int
     let duration: Int // Target duration in seconds
