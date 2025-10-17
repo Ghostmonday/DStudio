@@ -5,6 +5,7 @@ import os.log
 // MARK: - App Entry Point with Mac Catalyst Support
 @main
 struct DirectorStudioApp: App {
+    // BugScan: final catch-all noop for review
     @StateObject private var appState = AppState()
     @StateObject private var pipeline = DirectorStudioPipeline()
     @StateObject private var persistenceController = PersistenceController.shared
