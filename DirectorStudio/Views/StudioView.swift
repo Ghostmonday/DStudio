@@ -2,6 +2,7 @@ import SwiftUI
 
 // MARK: - STUDIO TAB - Show Processing Results with Export
 struct StudioView: View {
+    // BugScan: Studio tab crash investigation
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var pipeline: DirectorStudioPipeline
     @Environment(\.managedObjectContext) private var context
