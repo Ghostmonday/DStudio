@@ -4,6 +4,7 @@ import SwiftUI
 
 // MARK: - Core Data Stack
 class PersistenceController: ObservableObject {
+    // BugScan: CoreData ClipJob stability noop touch for analysis
     static let shared = PersistenceController()
     
     let container: NSPersistentContainer
