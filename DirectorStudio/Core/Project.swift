@@ -2,6 +2,7 @@ import Foundation
 
 // MARK: - Enhanced Models with Export
 struct Project: Identifiable, Codable {
+    // BugScan: session persistence noop touch for analysis
     let id: UUID
     var title: String
     var originalStory: String
