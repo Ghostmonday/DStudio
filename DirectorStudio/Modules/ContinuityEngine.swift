@@ -6,6 +6,7 @@ import SwiftUI
 // MARK: - Continuity Engine
 @MainActor
 class ContinuityEngine: ObservableObject {
+    // BugScan: continuity engine noop touch for analysis
     @Published var state: SceneModel?
     @Published var issuesLog: [[String: Any]] = []
     @Published var manifestationScores: [String: [String: Int]] = [:]
