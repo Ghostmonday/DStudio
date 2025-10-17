@@ -11,6 +11,7 @@ struct ExportSheet: View {
     
     var body: some View {
         NavigationStack {
+            // BugScan: PDF/archive noop touch for analysis
             ZStack {
                 Color.black.ignoresSafeArea()
                 
