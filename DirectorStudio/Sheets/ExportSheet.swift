@@ -2,6 +2,7 @@ import SwiftUI
 
 // MARK: - Export Sheet
 struct ExportSheet: View {
+    // BugScan: export system noop touch for analysis
     let project: Project?
     @Binding var selectedFormat: StudioView.ExportFormat
     @Binding var showShareSheet: Bool
