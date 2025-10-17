@@ -2,6 +2,7 @@ import SwiftUI
 
 // MARK: - Main Tab View with Adaptive Layout
 struct MainTabView: View {
+    // BugScan: navigation stack noop touch for analysis
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var pipeline: DirectorStudioPipeline
     @State private var selectedTab = 0
