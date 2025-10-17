@@ -22,6 +22,7 @@ project.xcworkspace
 # Sensitive Configuration Files
 Secrets.xcconfig
 DirectorStudio/Secrets.xcconfig
+Configuration/
 *.xcconfig
 !Config.xcconfig
 

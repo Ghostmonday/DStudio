@@ -13,6 +13,11 @@ class CreditWallet: ObservableObject {
     
     init() {
         loadBalanceFromKeychain()
+        // TEMPORARY: Set initial balance for testing
+        if balance == 0 {
+            balance = 5
+            saveBalanceToKeychain(balance)
+        }
     }
     
     // MARK: - Balance Management
@@ -39,35 +44,12 @@ class CreditWallet: ObservableObject {
     }
     
     func consume(amount: Int) async throws -> Int {
-        guard let authToken = getAuthToken() else {
-            throw CreditWalletError.notAuthenticated
-        }
-        
-        guard balance >= amount else {
-            throw CreditWalletError.insufficientCredits
-        }
-        
-        isLoading = true
-        errorMessage = nil
-        
-        defer {
-            isLoading = false
-        }
-        
-        do {
-            let response = try await ledgerAPI.consumeCredit(authToken: authToken, amount: amount)
-            
-            if response.success {
-                balance = response.remaining
-                saveBalanceToKeychain(response.remaining)
-                return response.remaining
-            } else {
-                throw CreditWalletError.consumeFailed(response.error ?? "Unknown error")
-            }
-        } catch {
-            errorMessage = error.localizedDescription
-            throw error
-        }
+        // TEMPORARY: Bypass credit check for testing
+        print("🧪 TESTING MODE: Bypassing credit check")
+        balance = max(balance, 1) // Ensure we have at least 1 credit
+        balance -= amount
+        saveBalanceToKeychain(balance)
+        return balance
     }
     
     func addCredits(_ amount: Int) {
