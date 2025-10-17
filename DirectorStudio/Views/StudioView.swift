@@ -20,6 +20,7 @@ struct StudioView: View {
     @State private var showGenerationAlert = false
     @State private var generationAlertMessage = ""
     @State private var shareTelemetry = false
+    @State private var viewReady = false // defer heavy view work until onAppear
     
     enum ExportFormat: String, CaseIterable {
         case screenplay = "Screenplay (.txt)"
@@ -105,8 +106,8 @@ struct StudioView: View {
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
                             
-                            // Debug Message for Short Input (with safe access)
-                            if let debugMessage = pipeline.segmentationModule.debugMessage, !debugMessage.isEmpty {
+                            // Only access pipeline after first onAppear pass
+                            if viewReady, let debugMessage = pipeline.segmentationModule.debugMessage, !debugMessage.isEmpty {
                                 HStack {
                                     Image(systemName: "info.circle.fill")
                                         .foregroundColor(.blue)
@@ -120,28 +121,40 @@ struct StudioView: View {
                                 .cornerRadius(8)
                             }
                             
-                            // Scene Segments (with safe access)
-                            let segments = pipeline.segmentationModule.segments
-                            if !segments.isEmpty {
-                                ForEach(segments) { segment in
-                                    SceneCardWithGeneration(segment: segment)
+                            // Scene Segments (render only when ready)
+                            if viewReady {
+                                let segments = pipeline.segmentationModule.segments
+                                if !segments.isEmpty {
+                                    ForEach(segments) { segment in
+                                        SceneCardWithGeneration(segment: segment)
+                                    }
+                                } else {
+                                    VStack(spacing: 12) {
+                                        Image(systemName: "film.stack")
+                                            .font(.system(size: 48))
+                                            .foregroundColor(.gray)
+                                        
+                                        Text("No segments available")
+                                            .font(.headline)
+                                            .foregroundColor(.gray)
+                                        
+                                        Text("Run the pipeline from the Create tab to generate segments")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    .padding()
                                 }
                             } else {
-                                VStack(spacing: 12) {
-                                    Image(systemName: "film.stack")
-                                        .font(.system(size: 48))
-                                        .foregroundColor(.gray)
-                                    
-                                    Text("No segments available")
-                                        .font(.headline)
-                                        .foregroundColor(.gray)
-                                    
-                                    Text("Run the pipeline from the Create tab to generate segments")
+                                // Lightweight placeholder to avoid touching pipeline before ready
+                                HStack(spacing: 8) {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                    Text("Preparing Studio…")
                                         .font(.caption)
-                                        .foregroundColor(.gray)
-                                        .multilineTextAlignment(.center)
+                                        .foregroundColor(.secondary)
                                 }
-                                .padding()
+                                .padding(.vertical)
                             }
                         }
                         .padding()
@@ -187,6 +200,10 @@ struct StudioView: View {
             }
             .task {
                 await creditWallet.refresh()
+            }
+            .onAppear {
+                // Defer pipeline-driven UI until after first frame to avoid any race conditions
+                DispatchQueue.main.async { viewReady = true }
             }
         }
     }
