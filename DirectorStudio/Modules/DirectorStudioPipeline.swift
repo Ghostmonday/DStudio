@@ -4,6 +4,7 @@ import os.log
 
 // MARK: - Pipeline Coordinator (Runs all modules in sequence)
 class DirectorStudioPipeline: ObservableObject {
+    // BugScan: scene pipeline noop touch for analysis
     @Published var currentStep = 0
     @Published var isRunning = false
     @Published var completedSteps: Set<Int> = []
