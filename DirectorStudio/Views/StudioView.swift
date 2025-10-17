@@ -20,7 +20,7 @@ struct StudioView: View {
     @State private var showClaimSheet = false
     @State private var showGenerationAlert = false
     @State private var generationAlertMessage = ""
-    @State private var shareTelemetry = false
+    @State private var shareTelemetry = false // BugScan: studio tab crash isolation toggle
     @State private var viewReady = false // defer heavy view work until onAppear
     
     enum ExportFormat: String, CaseIterable {
