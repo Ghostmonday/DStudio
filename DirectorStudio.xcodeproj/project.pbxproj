@@ -1,0 +1,618 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1A000001 /* DirectorStudioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000000 /* DirectorStudioApp.swift */; };
+		1A000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000002 /* ContentView.swift */; };
+		1A000005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A000004 /* Assets.xcassets */; };
+		1A000008 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A000007 /* Preview Assets.xcassets */; };
+		1A000010 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00000F /* AppState.swift */; };
+		1A000011 /* DeepSeekConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000012 /* DeepSeekConfig.swift */; };
+		1A000013 /* AIServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000014 /* AIServiceProtocol.swift */; };
+		1A000015 /* AIModuleError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000016 /* AIModuleError.swift */; };
+		1A000017 /* DeepSeekService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000018 /* DeepSeekService.swift */; };
+		1A000019 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001A /* Project.swift */; };
+		1A00001B /* PromptSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001C /* PromptSegment.swift */; };
+		1A00001D /* CinematicTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001E /* CinematicTags.swift */; };
+		1A00001F /* RewordingModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000020 /* RewordingModule.swift */; };
+		1A000021 /* StoryAnalyzerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000022 /* StoryAnalyzerModule.swift */; };
+		1A000023 /* PromptSegmentationModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000024 /* PromptSegmentationModule.swift */; };
+		1A000025 /* CinematicTaxonomyModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000026 /* CinematicTaxonomyModule.swift */; };
+		1A000027 /* ContinuityAnchorModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000028 /* ContinuityAnchorModule.swift */; };
+		1A000029 /* PromptPackagingModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00002A /* PromptPackagingModule.swift */; };
+		1A00002B /* DirectorStudioPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00002C /* DirectorStudioPipeline.swift */; };
+		1A00002D /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00002E /* MainTabView.swift */; };
+		1A00002F /* CreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000030 /* CreateView.swift */; };
+		1A000031 /* StudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000032 /* StudioView.swift */; };
+		1A000033 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000034 /* LibraryView.swift */; };
+		1A000035 /* SceneCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000036 /* SceneCard.swift */; };
+		1A000037 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000038 /* ProjectCard.swift */; };
+		1A000039 /* ModuleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00003A /* ModuleCard.swift */; };
+		1A0000A0 /* ModuleToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00009F /* ModuleToggle.swift */; };
+		1A00003B /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00003C /* Tag.swift */; };
+		1A00003D /* PipelineStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00003E /* PipelineStepView.swift */; };
+		1A00003F /* PipelineProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000040 /* PipelineProgressSheet.swift */; };
+		1A000041 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000042 /* ExportSheet.swift */; };
+		1A000043 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000044 /* ShareSheet.swift */; };
+		1A000045 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000046 /* OnboardingView.swift */; };
+		1A000047 /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000048 /* OnboardingPage.swift */; };
+		1A000049 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004A /* KeychainService.swift */; };
+		1A00004B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004C /* SettingsView.swift */; };
+		1A00004E /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004F /* SecretsManager.swift */; };
+		1A000070 /* SceneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00006F /* SceneModel.swift */; };
+		1A000072 /* APIKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000071 /* APIKeyManager.swift */; };
+		1A000074 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000073 /* AuthService.swift */; };
+		1A000076 /* CreditWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000075 /* CreditWallet.swift */; };
+		1A000078 /* FirstClipGrantService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000077 /* FirstClipGrantService.swift */; };
+		1A00007A /* LedgerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000079 /* LedgerAPI.swift */; };
+		1A00007C /* SoraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00007B /* SoraService.swift */; };
+		1A00007E /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00007D /* StoreManager.swift */; };
+		1A000080 /* ContinuityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00007F /* ContinuityEngine.swift */; };
+		1A000082 /* ClipPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000081 /* ClipPreviewCard.swift */; };
+		1A000084 /* ClaimIncludedClipSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000083 /* ClaimIncludedClipSheet.swift */; };
+		1A000086 /* PaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000085 /* PaywallSheet.swift */; };
+		1A000088 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000087 /* TimelineView.swift */; };
+		1A00008A /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000089 /* PersistenceController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A000000 /* DirectorStudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorStudioApp.swift; sourceTree = "<group>"; };
+		1A000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1A000004 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A000007 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		1A00000F /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		1A000012 /* DeepSeekConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekConfig.swift; sourceTree = "<group>"; };
+		1A000014 /* AIServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIServiceProtocol.swift; sourceTree = "<group>"; };
+		1A000016 /* AIModuleError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModuleError.swift; sourceTree = "<group>"; };
+		1A000018 /* DeepSeekService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekService.swift; sourceTree = "<group>"; };
+		1A00001A /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		1A00001C /* PromptSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptSegment.swift; sourceTree = "<group>"; };
+		1A00001E /* CinematicTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinematicTags.swift; sourceTree = "<group>"; };
+		1A000020 /* RewordingModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewordingModule.swift; sourceTree = "<group>"; };
+		1A000022 /* StoryAnalyzerModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAnalyzerModule.swift; sourceTree = "<group>"; };
+		1A000024 /* PromptSegmentationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptSegmentationModule.swift; sourceTree = "<group>"; };
+		1A000026 /* CinematicTaxonomyModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinematicTaxonomyModule.swift; sourceTree = "<group>"; };
+		1A000028 /* ContinuityAnchorModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuityAnchorModule.swift; sourceTree = "<group>"; };
+		1A00002A /* PromptPackagingModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptPackagingModule.swift; sourceTree = "<group>"; };
+		1A00002C /* DirectorStudioPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorStudioPipeline.swift; sourceTree = "<group>"; };
+		1A00002E /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		1A000030 /* CreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateView.swift; sourceTree = "<group>"; };
+		1A000032 /* StudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioView.swift; sourceTree = "<group>"; };
+		1A000034 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		1A000036 /* SceneCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCard.swift; sourceTree = "<group>"; };
+		1A000038 /* ProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCard.swift; sourceTree = "<group>"; };
+		1A00003A /* ModuleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleCard.swift; sourceTree = "<group>"; };
+		1A00009F /* ModuleToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleToggle.swift; sourceTree = "<group>"; };
+		1A00003C /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		1A00003E /* PipelineStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStepView.swift; sourceTree = "<group>"; };
+		1A000040 /* PipelineProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineProgressSheet.swift; sourceTree = "<group>"; };
+		1A000042 /* ExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSheet.swift; sourceTree = "<group>"; };
+		1A000044 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		1A000046 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		1A000048 /* OnboardingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPage.swift; sourceTree = "<group>"; };
+		1A00004A /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		1A00004C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		1A00004F /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
+		1A00005C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		1A00006F /* SceneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModel.swift; sourceTree = "<group>"; };
+		1A000071 /* APIKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyManager.swift; sourceTree = "<group>"; };
+		1A000073 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		1A000075 /* CreditWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditWallet.swift; sourceTree = "<group>"; };
+		1A000077 /* FirstClipGrantService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstClipGrantService.swift; sourceTree = "<group>"; };
+		1A000079 /* LedgerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAPI.swift; sourceTree = "<group>"; };
+		1A00007B /* SoraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoraService.swift; sourceTree = "<group>"; };
+		1A00007D /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		1A00007F /* ContinuityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuityEngine.swift; sourceTree = "<group>"; };
+		1A000081 /* ClipPreviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipPreviewCard.swift; sourceTree = "<group>"; };
+		1A000083 /* ClaimIncludedClipSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimIncludedClipSheet.swift; sourceTree = "<group>"; };
+		1A000085 /* PaywallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallSheet.swift; sourceTree = "<group>"; };
+		1A000087 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		1A000089 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		1A00008B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1A000050 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1A000051 = {
+			isa = PBXGroup;
+			children = (
+				1A000052 /* DirectorStudio */,
+				1A00005B /* Configuration */,
+				1A000053 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1A000052 /* DirectorStudio */ = {
+			isa = PBXGroup;
+			children = (
+				1A000000 /* DirectorStudioApp.swift */,
+				1A000002 /* ContentView.swift */,
+				1A000004 /* Assets.xcassets */,
+				1A00008B /* Info.plist */,
+				1A000054 /* Core */,
+				1A000055 /* Services */,
+				1A000056 /* Modules */,
+				1A000057 /* Views */,
+				1A000058 /* Components */,
+				1A000059 /* Sheets */,
+				1A000060 /* Onboarding */,
+				1A00008D /* Persistence */,
+				1A000061 /* Preview Content */,
+			);
+			path = DirectorStudio;
+			sourceTree = "<group>";
+		};
+		1A000053 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1A000054 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				1A00000F /* AppState.swift */,
+				1A000012 /* DeepSeekConfig.swift */,
+				1A00001A /* Project.swift */,
+				1A00001C /* PromptSegment.swift */,
+				1A00001E /* CinematicTags.swift */,
+				1A00006F /* SceneModel.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		1A000055 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1A000014 /* AIServiceProtocol.swift */,
+				1A000016 /* AIModuleError.swift */,
+				1A000018 /* DeepSeekService.swift */,
+				1A00004A /* KeychainService.swift */,
+				1A00004F /* SecretsManager.swift */,
+				1A000071 /* APIKeyManager.swift */,
+				1A000073 /* AuthService.swift */,
+				1A000075 /* CreditWallet.swift */,
+				1A000077 /* FirstClipGrantService.swift */,
+				1A000079 /* LedgerAPI.swift */,
+				1A00007B /* SoraService.swift */,
+				1A00007D /* StoreManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1A000056 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				1A000020 /* RewordingModule.swift */,
+				1A000022 /* StoryAnalyzerModule.swift */,
+				1A000024 /* PromptSegmentationModule.swift */,
+				1A000026 /* CinematicTaxonomyModule.swift */,
+				1A000028 /* ContinuityAnchorModule.swift */,
+				1A00002A /* PromptPackagingModule.swift */,
+				1A00002C /* DirectorStudioPipeline.swift */,
+				1A00007F /* ContinuityEngine.swift */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		1A000057 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1A00002E /* MainTabView.swift */,
+				1A000030 /* CreateView.swift */,
+				1A000032 /* StudioView.swift */,
+				1A000034 /* LibraryView.swift */,
+				1A00004C /* SettingsView.swift */,
+				1A000087 /* TimelineView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1A000058 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1A000036 /* SceneCard.swift */,
+				1A000038 /* ProjectCard.swift */,
+				1A00003A /* ModuleCard.swift */,
+				1A00009F /* ModuleToggle.swift */,
+				1A00003C /* Tag.swift */,
+				1A00003E /* PipelineStepView.swift */,
+				1A000081 /* ClipPreviewCard.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		1A000059 /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				1A000040 /* PipelineProgressSheet.swift */,
+				1A000042 /* ExportSheet.swift */,
+				1A000044 /* ShareSheet.swift */,
+				1A000083 /* ClaimIncludedClipSheet.swift */,
+				1A000085 /* PaywallSheet.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
+		1A00005B /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				1A00005C /* Secrets.xcconfig */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		1A000060 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				1A000046 /* OnboardingView.swift */,
+				1A000048 /* OnboardingPage.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		1A00008D /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				1A000089 /* PersistenceController.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		1A000061 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				1A000007 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1A000062 /* DirectorStudio */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A000063 /* Build configuration list for PBXNativeTarget "DirectorStudio" */;
+			buildPhases = (
+				1A000064 /* Sources */,
+				1A000050 /* Frameworks */,
+				1A000065 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DirectorStudio;
+			productName = DirectorStudio;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1A000066 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					1A000062 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 1A000067 /* Build configuration list for PBXProject "DirectorStudio" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1A000051;
+			productRefGroup = 1A000053 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1A000062 /* DirectorStudio */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1A000065 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A000008 /* Preview Assets.xcassets in Resources */,
+				1A000005 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1A000064 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A000003 /* ContentView.swift in Sources */,
+				1A000001 /* DirectorStudioApp.swift in Sources */,
+				1A000010 /* AppState.swift in Sources */,
+				1A000011 /* DeepSeekConfig.swift in Sources */,
+				1A000013 /* AIServiceProtocol.swift in Sources */,
+				1A000015 /* AIModuleError.swift in Sources */,
+				1A000017 /* DeepSeekService.swift in Sources */,
+				1A000019 /* Project.swift in Sources */,
+				1A00001B /* PromptSegment.swift in Sources */,
+				1A00001D /* CinematicTags.swift in Sources */,
+				1A00001F /* RewordingModule.swift in Sources */,
+				1A000021 /* StoryAnalyzerModule.swift in Sources */,
+				1A000023 /* PromptSegmentationModule.swift in Sources */,
+				1A000025 /* CinematicTaxonomyModule.swift in Sources */,
+				1A000027 /* ContinuityAnchorModule.swift in Sources */,
+				1A000029 /* PromptPackagingModule.swift in Sources */,
+				1A00002B /* DirectorStudioPipeline.swift in Sources */,
+				1A00002D /* MainTabView.swift in Sources */,
+				1A00002F /* CreateView.swift in Sources */,
+				1A000031 /* StudioView.swift in Sources */,
+				1A000033 /* LibraryView.swift in Sources */,
+				1A000035 /* SceneCard.swift in Sources */,
+				1A000037 /* ProjectCard.swift in Sources */,
+				1A000039 /* ModuleCard.swift in Sources */,
+				1A0000A0 /* ModuleToggle.swift in Sources */,
+				1A00003B /* Tag.swift in Sources */,
+				1A00003D /* PipelineStepView.swift in Sources */,
+				1A00003F /* PipelineProgressSheet.swift in Sources */,
+				1A000041 /* ExportSheet.swift in Sources */,
+				1A000043 /* ShareSheet.swift in Sources */,
+				1A000045 /* OnboardingView.swift in Sources */,
+				1A000047 /* OnboardingPage.swift in Sources */,
+				1A000049 /* KeychainService.swift in Sources */,
+				1A00004B /* SettingsView.swift in Sources */,
+				1A00004E /* SecretsManager.swift in Sources */,
+				1A000070 /* SceneModel.swift in Sources */,
+				1A000072 /* APIKeyManager.swift in Sources */,
+				1A000074 /* AuthService.swift in Sources */,
+				1A000076 /* CreditWallet.swift in Sources */,
+				1A000078 /* FirstClipGrantService.swift in Sources */,
+				1A00007A /* LedgerAPI.swift in Sources */,
+				1A00007C /* SoraService.swift in Sources */,
+				1A00007E /* StoreManager.swift in Sources */,
+				1A000080 /* ContinuityEngine.swift in Sources */,
+				1A000082 /* ClipPreviewCard.swift in Sources */,
+				1A000084 /* ClaimIncludedClipSheet.swift in Sources */,
+				1A000086 /* PaywallSheet.swift in Sources */,
+				1A000088 /* TimelineView.swift in Sources */,
+				1A00008A /* PersistenceController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1A000068 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1A000069 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1A00006A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"DirectorStudio/Preview Content\"";
+				DEVELOPMENT_TEAM = R7KX4HNBFY;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DirectorStudio/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.neuraldraft.DirectorStudio;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1A00006B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A00005C /* Secrets.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"DirectorStudio/Preview Content\"";
+				DEVELOPMENT_TEAM = R7KX4HNBFY;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DirectorStudio/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.neuraldraft.DirectorStudio;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A000063 /* Build configuration list for PBXNativeTarget "DirectorStudio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A00006A /* Debug */,
+				1A00006B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A000067 /* Build configuration list for PBXProject "DirectorStudio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A000068 /* Debug */,
+				1A000069 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1A000066 /* Project object */;
+}

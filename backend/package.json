@@ -1,0 +1,29 @@
+{
+  "name": "directorstudio-backend",
+  "version": "1.0.0",
+  "description": "Backend services for DirectorStudio credit ledger and SIWA authentication",
+  "main": "index.js",
+  "scripts": {
+    "dev": "supabase start",
+    "deploy": "supabase functions deploy",
+    "deploy:claim": "supabase functions deploy claim-first-clip",
+    "deploy:consume": "supabase functions deploy consume-credit",
+    "deploy:topup": "supabase functions deploy credit-topup",
+    "migrate": "supabase db push",
+    "reset": "supabase db reset",
+    "logs": "supabase functions logs",
+    "test": "deno test --allow-net --allow-env"
+  },
+  "keywords": [
+    "supabase",
+    "edge-functions",
+    "siwa",
+    "jwt",
+    "credits"
+  ],
+  "author": "NeuralDraft",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
