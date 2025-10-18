@@ -31,17 +31,12 @@ public final class PipelineManager {
     private var cancellationToken: Bool = false
     
     // Module instances
-    private var toneAnalysisModule: ToneAnalysisModule?
-    private var toneRestorationModule: ToneRestorationModule?
     private var rewordingModule: RewordingModule?
     private var storyAnalysisModule: StoryAnalysisModule?
     private var segmentationModule: SegmentationModule?
     private var taxonomyModule: CinematicTaxonomyModule?
     private var continuityModule: ContinuityModule?
     private var packagingModule: PackagingModule?
-    
-    // Tone memory (shared between phases)
-    private var toneMemory: ToneMemory?
     
     // Shared state between modules
     private var pipelineState: PipelineState
@@ -114,23 +109,10 @@ public final class PipelineManager {
                 }
             }
             
-            // PHASE 1: Tone Analysis (BEFORE segmentation)
-            if config.isToneAnalysisEnabled, let toneModule = toneAnalysisModule {
-                try await executeStep(
-                    stepNumber: 3,
-                    name: "Tone Analysis"
-                ) {
-                    try await self.executeToneAnalysis(
-                        story: pipelineState.rewordedStory ?? input.story,
-                        context: context
-                    )
-                }
-            }
-            
-            // Stage 4: Segmentation
+            // Stage 3: Segmentation
             if config.isSegmentationEnabled {
                 try await executeStep(
-                    stepNumber: 4,
+                    stepNumber: 3,
                     name: "Segmentation"
                 ) {
                     try await self.executeSegmentation(
@@ -140,10 +122,10 @@ public final class PipelineManager {
                 }
             }
             
-            // Stage 5: Cinematic Taxonomy
+            // Stage 4: Cinematic Taxonomy
             if config.isCinematicTaxonomyEnabled && pipelineState.segments != nil {
                 try await executeStep(
-                    stepNumber: 5,
+                    stepNumber: 4,
                     name: "Cinematic Taxonomy"
                 ) {
                     try await self.executeCinematicTaxonomy(
@@ -153,10 +135,10 @@ public final class PipelineManager {
                 }
             }
             
-            // Stage 6: Continuity
+            // Stage 5: Continuity
             if config.isContinuityEnabled {
                 try await executeStep(
-                    stepNumber: 6,
+                    stepNumber: 5,
                     name: "Continuity"
                 ) {
                     try await self.executeContinuity(
@@ -167,27 +149,10 @@ public final class PipelineManager {
                 }
             }
             
-            // PHASE 2: Tone Restoration (AFTER continuity)
-            var finalSegments = pipelineState.segments ?? []
-            if config.isToneRestorationEnabled, 
-               let toneModule = toneRestorationModule,
-               let memory = self.toneMemory {
-                try await executeStep(
-                    stepNumber: 7,
-                    name: "Tone Restoration"
-                ) {
-                    finalSegments = try await self.executeToneRestoration(
-                        segments: finalSegments,
-                        toneMemory: memory,
-                        context: context
-                    )
-                }
-            }
-            
-            // Stage 8: Packaging (always run if enabled)
+            // Stage 6: Packaging (always run if enabled)
             if config.isPackagingEnabled {
                 try await executeStep(
-                    stepNumber: 8,
+                    stepNumber: 6,
                     name: "Packaging"
                 ) {
                     try await self.executePackaging(
@@ -324,10 +289,6 @@ public final class PipelineManager {
         // Initialize API service (placeholder - needs actual implementation)
         // let apiService = DeepSeekService()
         
-        // Initialize tone modules
-        toneAnalysisModule = ToneAnalysisModule()
-        toneRestorationModule = ToneRestorationModule()
-        
         rewordingModule = RewordingModule()
         storyAnalysisModule = StoryAnalysisModule()
         segmentationModule = SegmentationModule()
@@ -398,40 +359,28 @@ public final class PipelineManager {
                 stepNumber: 2
             ),
             PipelineStepInfo(
-                id: "tone_analysis",
-                name: "Tone Analysis",
-                description: "Extract emotional tone and narrative style",
-                stepNumber: 3
-            ),
-            PipelineStepInfo(
                 id: "segmentation",
                 name: "Segmentation",
                 description: "Break story into video segments",
-                stepNumber: 4
+                stepNumber: 3
             ),
             PipelineStepInfo(
                 id: "taxonomy",
                 name: "Cinematic Taxonomy",
                 description: "Add camera angles and visual details",
-                stepNumber: 5
+                stepNumber: 4
             ),
             PipelineStepInfo(
                 id: "continuity",
                 name: "Continuity",
                 description: "Generate visual consistency markers",
-                stepNumber: 6
-            ),
-            PipelineStepInfo(
-                id: "tone_restoration",
-                name: "Tone Restoration",
-                description: "Restore emotional depth to segments",
-                stepNumber: 7
+                stepNumber: 5
             ),
             PipelineStepInfo(
                 id: "packaging",
                 name: "Packaging",
                 description: "Package final screenplay output",
-                stepNumber: 8
+                stepNumber: 6
             )
         ]
     }
@@ -538,55 +487,6 @@ public final class PipelineManager {
         case .success(let output):
             pipelineState.continuityAnchors = output.anchors
             return output.anchors
-        case .failure(let error):
-            throw error
-        }
-    }
-    
-    private func executeToneAnalysis(
-        story: String,
-        context: PipelineContext
-    ) async throws -> ToneMemory {
-        guard let module = toneAnalysisModule else {
-            throw PipelineError.executionFailed(module: "ToneAnalysis", reason: "Module not initialized")
-        }
-        
-        let input = ToneAnalysisInput(originalStory: story)
-        let result = await module.execute(input: input, context: context)
-        
-        switch result {
-        case .success(let output):
-            self.toneMemory = output.toneMemory
-            return output.toneMemory
-        case .failure(let error):
-            throw error
-        }
-    }
-    
-    private func executeToneRestoration(
-        segments: [PromptSegment],
-        toneMemory: ToneMemory,
-        context: PipelineContext
-    ) async throws -> [PromptSegment] {
-        guard let module = toneRestorationModule else {
-            throw PipelineError.executionFailed(module: "ToneRestoration", reason: "Module not initialized")
-        }
-        
-        let input = ToneRestorationInput(
-            processedSegments: segments,
-            toneMemory: toneMemory
-        )
-        let result = await module.execute(input: input, context: context)
-        
-        switch result {
-        case .success(let output):
-            // Update pipeline state with restored segments
-            pipelineState.segments = output.restoredSegments.map { restored in
-                var segment = restored.originalSegment
-                segment.text = restored.restoredText
-                return segment
-            }
-            return pipelineState.segments ?? segments
         case .failure(let error):
             throw error
         }

@@ -291,18 +291,6 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
-		9B3817E82EA35D10009786F7 /* Pipeline */ = {
-			isa = PBXGroup;
-			children = (
-				9B3817ED2EA35DC4009786F7 /* Config */,
-				9B3817EC2EA35D78009786F7 /* Models */,
-				9B3817EB2EA35D62009786F7 /* Storage */,
-				9B3817EA2EA35D44009786F7 /* Modules */,
-				9B3817E92EA35D3D009786F7 /* Core */,
-			);
-			path = Pipeline;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
