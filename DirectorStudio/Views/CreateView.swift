@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - CREATE TAB - Simplified Version
+// MARK: - CREATE TAB - Pipeline Integration (Phase 2)
 struct CreateView: View {
     @EnvironmentObject var appState: AppState
     @State private var projectTitle = ""
@@ -22,6 +22,9 @@ struct CreateView: View {
                     
                     // Story Input
                     storyInputSection
+                    
+                    // Pipeline Configuration
+                    pipelineConfigurationSection
                     
                     // Process Button
                     processButton
@@ -92,6 +95,30 @@ struct CreateView: View {
         }
     }
     
+    // MARK: - Pipeline Configuration Section
+    private var pipelineConfigurationSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Pipeline Configuration")
+                .font(.headline)
+                .foregroundColor(.white)
+            
+            VStack(spacing: 12) {
+                Text("Advanced pipeline system coming soon!")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                
+                Text("Individual step toggles and real-time progress will be available here.")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+            }
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+        }
+    }
+    
     // MARK: - Process Button
     private var processButton: some View {
         Button(action: {
@@ -152,7 +179,7 @@ struct CreateView: View {
     private func processStory() async {
         let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
         
-        // Create a simple project for now
+        // Create a simple project for now (advanced pipeline coming soon)
         let newProject = Project(
             id: UUID(),
             title: finalTitle,
