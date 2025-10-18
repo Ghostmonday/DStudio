@@ -43,6 +43,72 @@ struct PaywallSheet: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
                     
+                    // Pricing Information
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: "dollarsign.circle.fill")
+                                .foregroundColor(.green)
+                            Text("Pricing: $0.08 per credit")
+                                .font(.headline)
+                                .foregroundColor(.green)
+                        }
+                        
+                        Text("1 credit = 1,000 characters")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Story processing:")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            
+                            HStack {
+                                Text("500 chars")
+                                Spacer()
+                                Text("1 credit = $0.08")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            HStack {
+                                Text("2,000 chars")
+                                Spacer()
+                                Text("2 credits = $0.16")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            HStack {
+                                Text("5,000 chars")
+                                Spacer()
+                                Text("5 credits = $0.40")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            Divider()
+                            
+                            HStack {
+                                Image(systemName: "video.fill")
+                                    .foregroundColor(.purple)
+                                Text("Video generation:")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            }
+                            
+                            HStack {
+                                Text("20-second video")
+                                Spacer()
+                                Text("14 credits = $1.12")
+                                    .font(.caption)
+                                    .foregroundColor(.purple)
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(12)
+                    
                     // Products
                     VStack(spacing: 16) {
                         ForEach(storeManager.products, id: \.id) { product in

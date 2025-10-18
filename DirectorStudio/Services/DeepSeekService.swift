@@ -108,6 +108,13 @@ class DeepSeekService: AIServiceProtocol {
         }
         
         logger.info("✅ Successfully received response: \(content.prefix(100))...")
+        
+        // Track usage for diagnostics
+        #if DEBUG
+        let estimatedTokens = systemPrompt.count + userPrompt.count + content.count
+        print("🧠 DEBUG: DeepSeek tokens estimated: \(estimatedTokens)")
+        #endif
+        
         return content
     }
 }

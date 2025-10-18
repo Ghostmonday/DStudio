@@ -95,6 +95,12 @@ class SoraService: ObservableObject {
                                    (status["data"] as? [String: Any])?["video_url"] as? String,
                        let url = URL(string: urlStr) {
                         generationProgress = "Generation complete!"
+                        
+                        // Track video generation for diagnostics
+                        #if DEBUG
+                        print("🎬 DEBUG: Pollo video generated")
+                        #endif
+                        
                         return url
                     }
                 case "failed", "error":

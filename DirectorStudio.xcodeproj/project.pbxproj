@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -116,6 +116,14 @@
 		1A00009F /* ModuleToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleToggle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		9B3817E92EA35D3D009786F7 /* Core */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Core; sourceTree = "<group>"; };
+		9B3817EA2EA35D44009786F7 /* Modules */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Modules; sourceTree = "<group>"; };
+		9B3817EB2EA35D62009786F7 /* Storage */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Storage; sourceTree = "<group>"; };
+		9B3817EC2EA35D78009786F7 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+		9B3817ED2EA35DC4009786F7 /* Config */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Config; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		1A000050 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -139,6 +147,7 @@
 		1A000052 /* DirectorStudio */ = {
 			isa = PBXGroup;
 			children = (
+				9B3817E82EA35D10009786F7 /* Pipeline */,
 				1A000000 /* DirectorStudioApp.swift */,
 				1A000002 /* ContentView.swift */,
 				1A000004 /* Assets.xcassets */,
@@ -296,6 +305,13 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				9B3817E92EA35D3D009786F7 /* Core */,
+				9B3817EA2EA35D44009786F7 /* Modules */,
+				9B3817EB2EA35D62009786F7 /* Storage */,
+				9B3817EC2EA35D78009786F7 /* Models */,
+				9B3817ED2EA35DC4009786F7 /* Config */,
 			);
 			name = DirectorStudio;
 			productName = DirectorStudio;

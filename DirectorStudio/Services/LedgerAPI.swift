@@ -4,7 +4,7 @@ import Foundation
 class LedgerAPI {
     static let shared = LedgerAPI()
     
-    private let baseURL = "https://your-supabase-project.supabase.co/functions/v1"
+    private let baseURL = "https://carkncjucvtbggqrilwj.supabase.co/functions/v1"
     
     private init() {}
     
