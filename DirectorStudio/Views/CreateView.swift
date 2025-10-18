@@ -6,6 +6,9 @@ struct CreateView: View {
     @State private var projectTitle = ""
     @State private var storyInput = ""
     @State private var showPipelineSheet = false
+    @State private var isProcessing = false
+    @State private var showCompletionAlert = false
+    @State private var processingComplete = false
     
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -41,7 +44,17 @@ struct CreateView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .sheet(isPresented: $showPipelineSheet) {
-            PipelineProgressSheet()
+            PipelineProgressSheet(
+                isProcessing: $isProcessing,
+                processingComplete: $processingComplete
+            )
+        }
+        .alert("Processing Complete", isPresented: $showCompletionAlert) {
+            Button("OK") {
+                resetCreateView()
+            }
+        } message: {
+            Text("Your story has been processed and is ready in the Studio tab.")
         }
     }
     
@@ -116,6 +129,43 @@ struct CreateView: View {
                     .font(.caption)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
+                
+                // Developer telemetry (always visible)
+                #if DEBUG
+                Divider()
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("🔧 Developer Stats")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.orange)
+                    
+                    HStack {
+                        Text("Story Length:")
+                        Spacer()
+                        Text("\(storyInput.count) chars")
+                            .font(.caption)
+                            .monospaced()
+                    }
+                    
+                    HStack {
+                        Text("Estimated Credits:")
+                        Spacer()
+                        Text("\(Int(ceil(Double(storyInput.count) / 1000.0)))")
+                            .font(.caption)
+                            .monospaced()
+                    }
+                    
+                    HStack {
+                        Text("Estimated Cost:")
+                        Spacer()
+                        Text("$\(String(format: "%.2f", Double(Int(ceil(Double(storyInput.count) / 1000.0))) * 0.08))")
+                            .font(.caption)
+                            .monospaced()
+                            .foregroundColor(.green)
+                    }
+                }
+                .padding(.top, 8)
+                #endif
             }
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
@@ -189,30 +239,35 @@ struct CreateView: View {
     // MARK: - Process Button
     private var processButton: some View {
         Button(action: {
-            showPipelineSheet = true
             Task {
-                await processStory()
+                await startProcessing()
             }
         }) {
             HStack(spacing: 12) {
-                Image(systemName: "bolt.fill")
-                Text("Process with AI")
+                if isProcessing {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .tint(.white)
+                } else {
+                    Image(systemName: "bolt.fill")
+                }
+                Text(isProcessing ? "Processing..." : "Process with AI")
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(
                 LinearGradient(
-                    colors: [.purple, .pink],
+                    colors: isProcessing ? [.gray, .gray] : [.purple, .pink],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             )
             .foregroundColor(.white)
             .cornerRadius(16)
-            .shadow(color: .purple.opacity(0.5), radius: 10)
+            .shadow(color: isProcessing ? .clear : .purple.opacity(0.5), radius: 10)
         }
-        .disabled(storyInput.isEmpty || !DeepSeekConfig.hasValidAPIKey())
+        .disabled(storyInput.isEmpty || !DeepSeekConfig.hasValidAPIKey() || isProcessing)
         .padding(.horizontal)
         .padding(.top, 8)
     }
@@ -240,6 +295,35 @@ struct CreateView: View {
                 .padding(.horizontal)
             }
         }
+    }
+    
+    // MARK: - Processing Control
+    private func startProcessing() async {
+        isProcessing = true
+        showPipelineSheet = true
+        
+        await processStory()
+        
+        // Wait for actual processing to complete
+        isProcessing = false
+        processingComplete = true
+        
+        // Show completion alert only after everything is done
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            showCompletionAlert = true
+        }
+    }
+    
+    private func resetCreateView() {
+        // Reset all input fields
+        projectTitle = ""
+        storyInput = ""
+        
+        // Reset processing state
+        isProcessing = false
+        processingComplete = false
+        showPipelineSheet = false
+        showCompletionAlert = false
     }
     
     // MARK: - Story Processing (Tone System Ready)

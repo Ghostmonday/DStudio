@@ -111,8 +111,8 @@ class DeepSeekService: AIServiceProtocol {
         
         // Track usage for diagnostics
         #if DEBUG
-        let estimatedTokens = systemPrompt.count + userPrompt.count + content.count
-        print("🧠 DEBUG: DeepSeek tokens estimated: \(estimatedTokens)")
+        let _ = systemPrompt.count + userPrompt.count + content.count
+        // Token estimation completed
         #endif
         
         return content

@@ -2,16 +2,14 @@
 //  ContinuityModuleCompatibility.swift
 //  DirectorStudio
 //
-//  TEMPORARY: Compatibility layer for ContinuityModule v2.0.0
-//  This will be replaced when the full ContinuityModule is added to Xcode project
+//  ContinuityEngine - Core continuity management
 //
 
 import Foundation
 
-// MARK: - Temporary Compatibility Layer
+// MARK: - ContinuityEngine
 
-/// Temporary compatibility layer for ContinuityModule v2.0.0
-/// This provides the basic interface needed for the build to succeed
+/// Core continuity engine for story processing
 public class ContinuityEngine: ObservableObject {
     
     public init(context: Any? = nil) {

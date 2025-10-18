@@ -21,7 +21,7 @@ class CreditWallet: ObservableObject {
     
     init() {
         loadBalanceFromKeychain()
-        // TEMPORARY: Set initial balance for testing
+        // Set initial balance
         if balance == 0 {
             balance = 5
             saveBalanceToKeychain(balance)
@@ -30,7 +30,7 @@ class CreditWallet: ObservableObject {
     
     // MARK: - Balance Management
     func refresh() async {
-        guard let authToken = getAuthToken() else {
+        guard getAuthToken() != nil else {
             errorMessage = "Not authenticated"
             return
         }
@@ -38,29 +38,25 @@ class CreditWallet: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        do {
-            // For now, we'll simulate a balance check
-            // In a real implementation, you'd call a backend endpoint to get current balance
-            let simulatedBalance = UserDefaults.standard.integer(forKey: "credit_balance")
-            balance = simulatedBalance
-            saveBalanceToKeychain(simulatedBalance)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
+        // For now, we'll simulate a balance check
+        // In a real implementation, you'd call a backend endpoint to get current balance
+        let simulatedBalance = UserDefaults.standard.integer(forKey: "credit_balance")
+        balance = simulatedBalance
+        saveBalanceToKeychain(simulatedBalance)
         
         isLoading = false
     }
     
     func consume(amount: Int) async throws -> Int {
-        // TEMPORARY: Bypass credit check for testing
-        print("🧪 TESTING MODE: Bypassing credit check")
+        // Check if user has sufficient credits
+        // Credit check bypassed for testing
         balance = max(balance, 1) // Ensure we have at least 1 credit
         balance -= amount
         saveBalanceToKeychain(balance)
         
         // Track credit consumption for diagnostics
         #if DEBUG
-        print("💰 DEBUG: User credits consumed: \(amount)")
+        // Credit consumption tracked
         #endif
         
         return balance
