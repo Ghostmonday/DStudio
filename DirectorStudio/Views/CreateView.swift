@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - CREATE TAB - Pipeline Integration (Phase 2)
+// MARK: - CREATE TAB - Pipeline Integration (Phase 3 - Project Setup)
 struct CreateView: View {
     @EnvironmentObject var appState: AppState
     @State private var projectTitle = ""
@@ -103,19 +103,19 @@ struct CreateView: View {
                 .foregroundColor(.white)
             
             VStack(spacing: 12) {
-                Text("Advanced pipeline system coming soon!")
+                Text("PipelineManager integration in progress...")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding()
                 
-                Text("Individual step toggles and real-time progress will be available here.")
+                Text("Adding PipelineManager to Xcode project...")
                     .font(.caption)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
             }
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
         }
     }
     
@@ -179,7 +179,7 @@ struct CreateView: View {
     private func processStory() async {
         let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
         
-        // Create a simple project for now (advanced pipeline coming soon)
+        // Create a simple project for now (PipelineManager integration in progress)
         let newProject = Project(
             id: UUID(),
             title: finalTitle,
