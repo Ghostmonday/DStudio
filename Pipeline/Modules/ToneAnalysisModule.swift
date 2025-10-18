@@ -153,7 +153,7 @@ public struct ToneAnalysisModule: PipelineModule {
         }
         
         Story (first 2000 chars):
-        \(story.prefix(2000))
+        \(story.prefix(max(0, min(2000, story.count))))
         """
         
         let response = try await aiService.complete(
@@ -206,7 +206,8 @@ public struct ToneAnalysisModule: PipelineModule {
         }
         
         let primaryTone = toneScores.max(by: { $0.value < $1.value })?.key ?? .dramatic
-        let secondaryTones = Array(toneScores.sorted { $0.value > $1.value }.prefix(2).map { $0.key })
+        let sortedTones = toneScores.sorted { $0.value > $1.value }
+        let secondaryTones = Array(sortedTones.prefix(max(0, min(2, sortedTones.count))).map { $0.key })
         
         // Emotional register (based on intensity words)
         let highIntensityWords = ["never", "always", "everything", "nothing", "completely", "utterly"]
