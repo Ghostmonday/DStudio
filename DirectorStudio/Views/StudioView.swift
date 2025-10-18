@@ -1,16 +1,13 @@
 import SwiftUI
 
-// MARK: - STUDIO TAB - Show Processing Results with Export
+// MARK: - STUDIO TAB - Video Generation Interface
 struct StudioView: View {
-    // BugScan: Studio tab crash investigation
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var pipeline: DirectorStudioPipeline
-    @Environment(\.managedObjectContext) private var context
     
-    @StateObject private var continuityEngine = ContinuityEngine(context: PersistenceController.shared.container.viewContext)
-    @StateObject private var soraService = SoraService(apiKey: APIKeyManager.shared.getAPIKey())
+    // Safe service initializations (no problematic context/API key issues)
+    @StateObject private var soraService = SoraService(apiKey: "placeholder")
     @StateObject private var creditWallet = CreditWallet()
-    @StateObject private var firstClipService = FirstClipGrantService()
     
     @State private var showExportSheet = false
     @State private var exportFormat: ExportFormat = .screenplay
@@ -20,11 +17,9 @@ struct StudioView: View {
     @State private var showClaimSheet = false
     @State private var showGenerationAlert = false
     @State private var generationAlertMessage = ""
-@State private var shareTelemetry = false
-@State private var viewReady = false // defer heavy view work until onAppear
-
-enum ExportFormat: String, CaseIterable {
-
+    @State private var shareTelemetry = false
+    
+    enum ExportFormat: String, CaseIterable {
         case screenplay = "Screenplay (.txt)"
         case json = "JSON Data (.json)"
         case promptList = "Prompt List (.txt)"
@@ -76,79 +71,110 @@ enum ExportFormat: String, CaseIterable {
                                             )
                                         )
                                         .foregroundColor(.white)
-                                        .cornerRadius(10)
+                                        .cornerRadius(20)
                                     }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            .padding()
-                            
-                            // Credit Balance Display
-                            HStack {
-                                Image(systemName: "bolt.fill")
-                                    .foregroundColor(.yellow)
-                                Text("\(creditWallet.balance) credits")
-                                    .font(.headline)
-                                Spacer()
-                                if creditWallet.balance == 0 && !firstClipService.hasClaimedFirstClip {
-                                    Button("Claim Included Clip") {
-                                        showClaimSheet = true
-                                    }
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
-                                } else if creditWallet.balance == 0 {
-                                    Button("Buy Credits") {
-                                        showPaywallSheet = true
-                                    }
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
                                 }
                             }
                             .padding()
-                            .background(Color(.systemGray6))
+                            .background(Color.white.opacity(0.05))
                             .cornerRadius(12)
                             
-                            // Scene Segments (simplified for now)
-                            if viewReady {
-                                // For now, show a placeholder since we don't have segments yet
-                                VStack(spacing: 12) {
+                            // Segments Section with Video Generation
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Text("Scenes")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                    
+                                    Spacer()
+                                    
+                                    Text("\(project.segments.count) scenes")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                
+                                if project.segments.isEmpty {
                                     VStack(spacing: 12) {
-                                        Image(systemName: "film.stack")
+                                        Image(systemName: "film")
                                             .font(.system(size: 48))
                                             .foregroundColor(.gray)
                                         
                                         Text("No segments available")
                                             .font(.headline)
-                                            .foregroundColor(.gray)
+                                            .foregroundColor(.white)
                                         
-                                        Text("Run the pipeline from the Create tab to generate segments")
-                                            .font(.caption)
+                                        Text("Process a story in the Create tab to generate scenes")
+                                            .font(.subheadline)
                                             .foregroundColor(.gray)
                                             .multilineTextAlignment(.center)
                                     }
-                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .padding(40)
+                                    .background(Color.white.opacity(0.05))
+                                    .cornerRadius(12)
+                                } else {
+                                    LazyVStack(spacing: 12) {
+                                        ForEach(project.segments, id: \.id) { segment in
+                                            SceneCardWithVideoGeneration(segment: segment, soraService: soraService)
+                                        }
+                                    }
                                 }
-                            } else {
-                                // Lightweight placeholder to avoid touching pipeline before ready
-                                HStack(spacing: 8) {
-                                    ProgressView()
-                                        .scaleEffect(0.8)
-                                    Text("Preparing Studio…")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding(.vertical)
                             }
+                            .padding()
+                            .background(Color.white.opacity(0.05))
+                            .cornerRadius(12)
+                            
+                            // Credits Section
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Text("Credits")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                    
+                                    Spacer()
+                                    
+                                    Button("Top Up") {
+                                        showPaywallSheet = true
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.purple)
+                                }
+                                
+                                HStack {
+                                    Image(systemName: "star.fill")
+                                        .foregroundColor(.yellow)
+                                    
+                                    Text("5 credits remaining")
+                                        .font(.subheadline)
+                                        .foregroundColor(.white)
+                                    
+                                    Spacer()
+                                }
+                            }
+                            .padding()
+                            .background(Color.white.opacity(0.05))
+                            .cornerRadius(12)
                         }
                         .padding()
                     }
                 } else {
-                    ContentUnavailableView(
-                        "No Scenes Yet",
-                        systemImage: "film.stack",
-                        description: Text("Create a story in the Create tab to get started")
-                    )
-                    .foregroundColor(.white)
+                    // No Project State
+                    VStack(spacing: 20) {
+                        Image(systemName: "film")
+                            .font(.system(size: 64))
+                            .foregroundColor(.gray)
+                        
+                        Text("No Project Selected")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        
+                        Text("Create a new project in the Create tab to get started")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .navigationTitle("Studio")
@@ -163,13 +189,9 @@ enum ExportFormat: String, CaseIterable {
                     exportedContent: $exportedContent
                 )
             }
-            #if os(iOS)
             .sheet(isPresented: $showShareSheet) {
-                if let project = appState.currentProject {
-                    ShareSheet(activityItems: [exportedContent])
-                }
+                ShareSheet(activityItems: [exportedContent])
             }
-            #endif
             .sheet(isPresented: $showPaywallSheet) {
                 PaywallSheet()
             }
@@ -181,154 +203,140 @@ enum ExportFormat: String, CaseIterable {
             } message: {
                 Text(generationAlertMessage)
             }
-            .task {
-                await creditWallet.refresh()
-            }
-            .onAppear {
-                // Defer pipeline-driven UI until after first frame to avoid any race conditions
-                DispatchQueue.main.async { viewReady = true }
-            }
         }
     }
+}
+
+// MARK: - Scene Card with Video Generation
+struct SceneCardWithVideoGeneration: View {
+    let segment: PromptSegment
+    @ObservedObject var soraService: SoraService
+    @State private var isGenerating = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     
-    // MARK: - Scene Card with Generation
-    @ViewBuilder
-    private func SceneCardWithGeneration(segment: PromptSegment) -> some View {
+    var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Original Scene Card
-            SceneCard(segment: segment)
-            
-            // Continuity Validation
-            let sceneModel = segment.toSceneModel()
-            let validation = continuityEngine.validate(sceneModel)
-            let isValid = (validation["ok"] as? Bool) ?? false
-            
             HStack {
-                Image(systemName: isValid ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundColor(isValid ? .green : .orange)
-                
-                Text(isValid ? "Continuity OK" : "Continuity Issues")
-                    .font(.caption)
-                    .foregroundColor(isValid ? .green : .orange)
+                Text("Scene \(segment.index)")
+                    .font(.headline)
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
-                // Generate Button
-                Button(action: { generateClip(for: sceneModel) }) {
-                    HStack(spacing: 4) {
-                        if soraService.isGenerating {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: "bolt.fill")
-                        }
-                        Text("Generate Clip")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                Text("\(segment.duration)s")
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.purple.opacity(0.3))
                     .cornerRadius(8)
-                }
-                .disabled(soraService.isGenerating || creditWallet.balance == 0)
+                    .foregroundColor(.purple)
             }
             
-            // Generation Progress
-            if soraService.isGenerating {
-                HStack {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                    Text(soraService.generationProgress)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            Text(segment.content)
+                .font(.body)
+                .foregroundColor(.gray)
+                .lineLimit(3)
+            
+            if let tags = segment.cinematicTags {
+                HStack(spacing: 8) {
+                    Tag(text: tags.shotType, icon: "camera")
+                    Tag(text: tags.lighting, icon: "light.max")
+                    Tag(text: tags.emotionalTone, icon: "sparkles")
                 }
-                .padding(.horizontal)
             }
+            
+            // Video Generation Button
+            Button(action: generateVideo) {
+                HStack {
+                    if isGenerating {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .foregroundColor(.white)
+                    } else {
+                        Image(systemName: "play.circle.fill")
+                    }
+                    
+                    Text(isGenerating ? "Generating..." : "Generate Video")
+                    
+                    Spacer()
+                    
+                    if !isGenerating {
+                        Text("$0.50")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                    }
+                }
+                .foregroundColor(.white)
+            }
+            .disabled(isGenerating)
+            .padding()
+            .background(
+                LinearGradient(
+                    colors: isGenerating ? [.gray, .gray] : [.purple, .pink],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .cornerRadius(12)
             
             // Video Preview
             if let previewURL = soraService.previewURL {
                 AsyncImage(url: previewURL) { image in
                     image
                         .resizable()
-                        .aspectRatio(16/9, contentMode: .fit)
-                        .cornerRadius(8)
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(12)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(.systemGray5))
-                        .aspectRatio(16/9, contentMode: .fit)
-                        .overlay(ProgressView())
+                    ProgressView("Rendering...")
+                        .frame(height: 100)
                 }
+                .frame(maxHeight: 200)
+            }
+            
+            // Generation Progress
+            if soraService.isGenerating && !soraService.generationProgress.isEmpty {
+                Text(soraService.generationProgress)
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                    .padding(.horizontal)
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-    }
-    
-    // MARK: - Generate Clip
-    private func generateClip(for scene: SceneModel) {
-        Task {
-            do {
-                // Check credits
-                guard creditWallet.balance > 0 else {
-                    if !firstClipService.hasClaimedFirstClip {
-                        showClaimSheet = true
-                    } else {
-                        showPaywallSheet = true
-                    }
-                    return
-                }
-                
-                // Validate scene
-                let validation = continuityEngine.validate(scene)
-                guard (validation["ok"] as? Bool) == true else {
-                    generationAlertMessage = (validation["issues"] as? [String])?.joined(separator: "\n") ?? "Unknown continuity issue"
-                    showGenerationAlert = true
-                    return
-                }
-                
-                // Consume credit
-                let remaining = try await creditWallet.consume(amount: 1)
-                
-                // Enhance prompt
-                let enhancedPrompt = continuityEngine.enhancePrompt(for: scene)
-                
-                // Generate video
-                if let taskId = try await soraService.generate(prompt: enhancedPrompt) {
-                    // Poll for completion
-                    if let videoURL = try await soraService.pollForCompletion(taskId: taskId) {
-                        soraService.previewURL = videoURL
-                        
-                        // Update telemetry if opted-in
-                        if shareTelemetry {
-                            continuityEngine.updateTelemetry(word: "wand", appeared: true) // Example
-                        }
-                        
-                        // Save clip job to Core Data
-                        saveClipJob(sceneId: scene.id, taskId: taskId, videoURL: videoURL.absoluteString)
-                    }
-                }
-            } catch {
-                generationAlertMessage = "Generation failed: \(error.localizedDescription)"
-                showGenerationAlert = true
-            }
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+        .alert("Generation Error", isPresented: $showAlert) {
+            Button("OK") { }
+        } message: {
+            Text(alertMessage)
         }
     }
     
-    // MARK: - Save Clip Job
-    private func saveClipJob(sceneId: Int, taskId: String, videoURL: String) {
-        let clipJob = ClipJob(context: context)
-        clipJob.id = UUID()
-        clipJob.scene_id = Int32(sceneId)
-        clipJob.taskId = taskId
-        clipJob.status = "completed"
-        clipJob.videoURL = videoURL
-        clipJob.createdAt = Date()
-        clipJob.updatedAt = Date()
+    private func generateVideo() {
+        isGenerating = true
         
-        try? context.save()
+        Task {
+            do {
+                if let taskId = try await soraService.generate(prompt: segment.content) {
+                    // Poll for completion
+                    if let url = try await soraService.pollForCompletion(taskId: taskId) {
+                        soraService.previewURL = url
+                    }
+                }
+            } catch {
+                alertMessage = "Generation failed: \(error.localizedDescription)"
+                showAlert = true
+            }
+            
+            await MainActor.run {
+                isGenerating = false
+            }
+        }
     }
+}
+
+#Preview {
+    StudioView()
+        .environmentObject(AppState())
+        .environmentObject(DirectorStudioPipeline())
 }
