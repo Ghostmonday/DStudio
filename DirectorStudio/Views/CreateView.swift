@@ -141,7 +141,7 @@ struct CreateView: View {
                 Divider()
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Example costs:")
+                    Text("Story processing costs:")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     
@@ -159,6 +159,26 @@ struct CreateView: View {
                                 .monospaced()
                                 .foregroundColor(.blue)
                         }
+                    }
+                    
+                    Divider()
+                    
+                    HStack {
+                        Image(systemName: "video.fill")
+                            .foregroundColor(.purple)
+                        Text("Video generation:")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    HStack {
+                        Text("20-second video")
+                            .font(.caption)
+                        Spacer()
+                        Text("14 credits = $1.12")
+                            .font(.caption)
+                            .monospaced()
+                            .foregroundColor(.purple)
                     }
                 }
             }

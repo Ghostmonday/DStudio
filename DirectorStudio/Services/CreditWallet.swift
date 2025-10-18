@@ -8,8 +8,13 @@ class CreditWallet: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    // Updated pricing baseline: $0.08 per credit
+    // Updated pricing baseline: $0.08 per credit (our cost)
     public static let costPerCredit = 0.08 // USD per credit
+    
+    // Video generation pricing
+    public static let creditsPerVideo = 14 // credits for 20-second video
+    public static let videoDurationSeconds = 20 // seconds per video
+    public static let costPerVideo = Double(creditsPerVideo) * costPerCredit // $1.12 per 20-second video
     
     private let ledgerAPI = LedgerAPI.shared
     private let keychain = KeychainService.shared
@@ -79,11 +84,24 @@ class CreditWallet: ObservableObject {
         return calculateCost(credits: credits)
     }
     
+    /// Calculate the cost for video generation
+    func calculateVideoCost() -> Double {
+        return Self.costPerVideo
+    }
+    
+    /// Calculate credits needed for video generation
+    func calculateCreditsForVideo() -> Int {
+        return Self.creditsPerVideo
+    }
+    
     /// Get pricing information for display
     func getPricingInfo() -> PricingInfo {
         return PricingInfo(
             costPerCredit: Self.costPerCredit,
             creditsPer1000Chars: 1,
+            videoCost: Self.costPerVideo,
+            videoCredits: Self.creditsPerVideo,
+            videoDuration: Self.videoDurationSeconds,
             exampleCosts: [
                 (chars: 500, cost: calculateStoryCost(characterCount: 500)),
                 (chars: 2000, cost: calculateStoryCost(characterCount: 2000)),
@@ -113,11 +131,17 @@ class CreditWallet: ObservableObject {
 public struct PricingInfo: Sendable {
     public let costPerCredit: Double
     public let creditsPer1000Chars: Int
+    public let videoCost: Double
+    public let videoCredits: Int
+    public let videoDuration: Int
     public let exampleCosts: [(chars: Int, cost: Double)]
     
-    public init(costPerCredit: Double, creditsPer1000Chars: Int, exampleCosts: [(chars: Int, cost: Double)]) {
+    public init(costPerCredit: Double, creditsPer1000Chars: Int, videoCost: Double, videoCredits: Int, videoDuration: Int, exampleCosts: [(chars: Int, cost: Double)]) {
         self.costPerCredit = costPerCredit
         self.creditsPer1000Chars = creditsPer1000Chars
+        self.videoCost = videoCost
+        self.videoCredits = videoCredits
+        self.videoDuration = videoDuration
         self.exampleCosts = exampleCosts
     }
 }

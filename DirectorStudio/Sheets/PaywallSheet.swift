@@ -58,7 +58,7 @@ struct PaywallSheet: View {
                             .foregroundColor(.secondary)
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Example usage:")
+                            Text("Story processing:")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                             
@@ -84,6 +84,24 @@ struct PaywallSheet: View {
                                 Text("5 credits = $0.40")
                                     .font(.caption)
                                     .foregroundColor(.blue)
+                            }
+                            
+                            Divider()
+                            
+                            HStack {
+                                Image(systemName: "video.fill")
+                                    .foregroundColor(.purple)
+                                Text("Video generation:")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            }
+                            
+                            HStack {
+                                Text("20-second video")
+                                Spacer()
+                                Text("14 credits = $1.12")
+                                    .font(.caption)
+                                    .foregroundColor(.purple)
                             }
                         }
                     }
