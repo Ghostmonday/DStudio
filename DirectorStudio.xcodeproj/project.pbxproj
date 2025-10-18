@@ -33,7 +33,6 @@
 		1A000035 /* SceneCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000036 /* SceneCard.swift */; };
 		1A000037 /* ProjectCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000038 /* ProjectCard.swift */; };
 		1A000039 /* ModuleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00003A /* ModuleCard.swift */; };
-		1A0000A0 /* ModuleToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00009F /* ModuleToggle.swift */; };
 		1A00003B /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00003C /* Tag.swift */; };
 		1A00003D /* PipelineStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00003E /* PipelineStepView.swift */; };
 		1A00003F /* PipelineProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000040 /* PipelineProgressSheet.swift */; };
@@ -58,6 +57,7 @@
 		1A000086 /* PaywallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000085 /* PaywallSheet.swift */; };
 		1A000088 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000087 /* TimelineView.swift */; };
 		1A00008A /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000089 /* PersistenceController.swift */; };
+		1A0000A0 /* ModuleToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00009F /* ModuleToggle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -87,7 +87,6 @@
 		1A000036 /* SceneCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCard.swift; sourceTree = "<group>"; };
 		1A000038 /* ProjectCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectCard.swift; sourceTree = "<group>"; };
 		1A00003A /* ModuleCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleCard.swift; sourceTree = "<group>"; };
-		1A00009F /* ModuleToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleToggle.swift; sourceTree = "<group>"; };
 		1A00003C /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		1A00003E /* PipelineStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStepView.swift; sourceTree = "<group>"; };
 		1A000040 /* PipelineProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineProgressSheet.swift; sourceTree = "<group>"; };
@@ -114,6 +113,7 @@
 		1A000087 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		1A000089 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		1A00008B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A00009F /* ModuleToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleToggle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,20 +266,20 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
-		1A00008D /* Persistence */ = {
-			isa = PBXGroup;
-			children = (
-				1A000089 /* PersistenceController.swift */,
-			);
-			path = Persistence;
-			sourceTree = "<group>";
-		};
 		1A000061 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
 				1A000007 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		1A00008D /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				1A000089 /* PersistenceController.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
