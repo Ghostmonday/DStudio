@@ -23,9 +23,6 @@ struct CreateView: View {
                     // Story Input
                     storyInputSection
                     
-                    // Pricing Information
-                    pricingInformationSection
-                    
                     // Pipeline Configuration
                     pipelineConfigurationSection
                     
@@ -106,13 +103,13 @@ struct CreateView: View {
                 .foregroundColor(.white)
             
             VStack(spacing: 12) {
-                Text("AI Pipeline Ready")
+                Text("PipelineManager integration in progress...")
                     .font(.subheadline)
-                    .foregroundColor(.green)
+                    .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
                     .padding()
                 
-                Text("All pipeline modules are configured and ready for processing")
+                Text("Adding PipelineManager to Xcode project...")
                     .font(.caption)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
@@ -120,70 +117,6 @@ struct CreateView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
         }
-    }
-    
-    // MARK: - Pricing Information
-    private var pricingInformationSection: some View {
-        GroupBox("Pricing Information") {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "dollarsign.circle.fill")
-                        .foregroundColor(.green)
-                    Text("Cost: $0.08 per credit")
-                        .font(.headline)
-                        .foregroundColor(.green)
-                }
-                
-                Text("1 credit = 1,000 characters")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                Divider()
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Story processing costs:")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                    
-                    ForEach([
-                        (chars: 500, label: "Short story"),
-                        (chars: 2000, label: "Medium story"),
-                        (chars: 5000, label: "Long story")
-                    ], id: \.chars) { example in
-                        HStack {
-                            Text(example.label)
-                                .font(.caption)
-                            Spacer()
-                            Text("\(example.chars) chars = $\(String(format: "%.2f", Double(Int(ceil(Double(example.chars) / 1000.0))) * 0.08))")
-                                .font(.caption)
-                                .monospaced()
-                                .foregroundColor(.blue)
-                        }
-                    }
-                    
-                    Divider()
-                    
-                    HStack {
-                        Image(systemName: "video.fill")
-                            .foregroundColor(.purple)
-                        Text("Video generation:")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-                    
-                    HStack {
-                        Text("20-second video")
-                            .font(.caption)
-                        Spacer()
-                        Text("14 credits = $1.12")
-                            .font(.caption)
-                            .monospaced()
-                            .foregroundColor(.purple)
-                    }
-                }
-            }
-        }
-        .padding(.horizontal)
     }
     
     // MARK: - Process Button
@@ -242,182 +175,27 @@ struct CreateView: View {
         }
     }
     
-    // MARK: - Story Processing (Tone System Ready)
+    // MARK: - Story Processing
     private func processStory() async {
         let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
         
-        // Check if we have a valid API key
-        guard DeepSeekConfig.hasValidAPIKey() else {
-            print("❌ DeepSeek API key not configured")
-            return
-        }
-        
-        // Process the story with real AI (Tone System files ready for integration)
-        do {
-            let processedSegments = try await processStoryWithAI(story: storyInput)
-            
-            // Create a new project with the AI-processed story
-            let newProject = Project(
-                id: UUID(),
-                title: finalTitle,
-                originalStory: storyInput,
-                rewordedStory: storyInput, // Could be enhanced with AI rephrasing
-                analysis: StoryAnalysisCache(
-                    characterCount: storyInput.count,
-                    locationCount: 1,
-                    sceneCount: processedSegments.count
-                ),
-                segments: processedSegments,
-                continuityAnchors: [],
-                createdAt: Date(),
-                updatedAt: Date()
-            )
-            
-            await MainActor.run {
-                appState.projects.append(newProject)
-                appState.currentProject = newProject
-            }
-            
-        } catch {
-            print("❌ AI processing failed: \(error.localizedDescription)")
-            // Fallback to mock segments if AI fails
-            let fallbackProject = Project(
-                id: UUID(),
-                title: finalTitle,
-                originalStory: storyInput,
-                rewordedStory: storyInput,
-                analysis: StoryAnalysisCache(
-                    characterCount: storyInput.count,
-                    locationCount: 1,
-                    sceneCount: 3
-                ),
-                segments: createMockSegments(from: storyInput),
-                continuityAnchors: [],
-                createdAt: Date(),
-                updatedAt: Date()
-            )
-            
-            await MainActor.run {
-                appState.projects.append(fallbackProject)
-                appState.currentProject = fallbackProject
-            }
-        }
-    }
-    
-    // MARK: - AI Story Processing
-    private func processStoryWithAI(story: String) async throws -> [PromptSegment] {
-        let deepSeekService = DeepSeekService()
-        
-        // Step 1: Analyze the story and break it into scenes
-        let analysisPrompt = """
-        Analyze this story and break it into 3-5 cinematic scenes. For each scene, provide:
-        1. Scene content (what happens)
-        2. Characters involved
-        3. Setting/location
-        4. Action taking place
-        5. Props needed
-        6. Emotional tone
-        
-        Story: \(story)
-        
-        Respond in JSON format:
-        {
-          "scenes": [
-            {
-              "content": "Scene description",
-              "characters": ["Character1", "Character2"],
-              "setting": "Location description",
-              "action": "What's happening",
-              "props": ["prop1", "prop2"],
-              "tone": "emotional tone"
-            }
-          ]
-        }
-        """
-        
-        let analysisResponse = try await deepSeekService.sendRequest(
-            systemPrompt: "You are a professional film director. Break down stories into cinematic scenes with detailed production notes.",
-            userPrompt: analysisPrompt,
-            temperature: 0.7,
-            maxTokens: 2000
+        // Create a simple project for now (PipelineManager integration in progress)
+        let newProject = Project(
+            id: UUID(),
+            title: finalTitle,
+            originalStory: storyInput,
+            rewordedStory: nil,
+            analysis: nil,
+            segments: [],
+            continuityAnchors: [],
+            createdAt: Date(),
+            updatedAt: Date()
         )
         
-        // Parse the AI response and create segments
-        return try parseAIResponseToSegments(response: analysisResponse)
-    }
-    
-    // MARK: - Parse AI Response
-    private func parseAIResponseToSegments(response: String) throws -> [PromptSegment] {
-        // Extract JSON from response (handle cases where AI adds extra text)
-        let jsonStart = response.firstIndex(of: "{") ?? response.startIndex
-        let jsonEnd = response.lastIndex(of: "}") ?? response.endIndex
-        let jsonString = String(response[jsonStart...jsonEnd])
-        
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            throw AIModuleError.parsingError("Failed to convert JSON string to data")
+        await MainActor.run {
+            appState.projects.append(newProject)
+            appState.currentProject = newProject
         }
-        
-        struct AIResponse: Codable {
-            let scenes: [AIScene]
-        }
-        
-        struct AIScene: Codable {
-            let content: String
-            let characters: [String]
-            let setting: String
-            let action: String
-            let props: [String]
-            let tone: String
-        }
-        
-        let aiResponse = try JSONDecoder().decode(AIResponse.self, from: jsonData)
-        
-        return aiResponse.scenes.enumerated().map { index, scene in
-            PromptSegment(
-                index: index + 1,
-                duration: 4, // Default 4 seconds per scene
-                content: scene.content,
-                characters: scene.characters,
-                setting: scene.setting,
-                action: scene.action,
-                continuityNotes: "AI-generated scene \(index + 1)",
-                location: scene.setting,
-                props: scene.props,
-                tone: scene.tone
-            )
-        }
-    }
-    
-    // MARK: - Mock Segment Creation
-    private func createMockSegments(from story: String) -> [PromptSegment] {
-        // Split story into 3 parts for demo
-        let words = story.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-        let segmentSize = max(1, words.count / 3)
-        
-        var segments: [PromptSegment] = []
-        
-        for i in 0..<3 {
-            let startIndex = i * segmentSize
-            let endIndex = min((i + 1) * segmentSize, words.count)
-            let segmentWords = Array(words[startIndex..<endIndex])
-            let content = segmentWords.joined(separator: " ")
-            
-            let segment = PromptSegment(
-                index: i + 1,
-                duration: 4,
-                content: content.isEmpty ? "Scene \(i + 1) content" : content,
-                characters: ["Character \(i + 1)"],
-                setting: ["Indoor", "Outdoor", "Urban"][i % 3],
-                action: ["Walking", "Talking", "Observing"][i % 3],
-                continuityNotes: "Scene \(i + 1) continuity notes",
-                location: ["Room", "Street", "Park"][i % 3],
-                props: ["Item \(i + 1)"],
-                tone: ["Dramatic", "Peaceful", "Exciting"][i % 3]
-            )
-            segments.append(segment)
-        }
-        
-        return segments
     }
 }
 
