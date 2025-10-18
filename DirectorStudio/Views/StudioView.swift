@@ -262,7 +262,7 @@ struct SceneCardWithVideoGeneration: View {
                     Spacer()
                     
                     if !isGenerating {
-                        Text("$0.50")
+                        Text("$0.08")
                             .font(.caption2)
                             .foregroundColor(.orange)
                     }

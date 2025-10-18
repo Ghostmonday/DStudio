@@ -8,6 +8,9 @@ class CreditWallet: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
+    // Updated pricing baseline: $0.08 per credit
+    public static let costPerCredit = 0.08 // USD per credit
+    
     private let ledgerAPI = LedgerAPI.shared
     private let keychain = KeychainService.shared
     
@@ -57,6 +60,38 @@ class CreditWallet: ObservableObject {
         saveBalanceToKeychain(balance)
     }
     
+    // MARK: - Pricing Calculations
+    
+    /// Calculate the cost in USD for a given number of credits
+    func calculateCost(credits: Int) -> Double {
+        return Double(credits) * Self.costPerCredit
+    }
+    
+    /// Calculate how many credits are needed for a story based on character count
+    /// Using the measurement-based approach: 1 credit = 1,000 characters
+    func calculateCreditsForStory(characterCount: Int) -> Int {
+        return Int(ceil(Double(characterCount) / 1000.0))
+    }
+    
+    /// Calculate the total cost for processing a story
+    func calculateStoryCost(characterCount: Int) -> Double {
+        let credits = calculateCreditsForStory(characterCount: characterCount)
+        return calculateCost(credits: credits)
+    }
+    
+    /// Get pricing information for display
+    func getPricingInfo() -> PricingInfo {
+        return PricingInfo(
+            costPerCredit: Self.costPerCredit,
+            creditsPer1000Chars: 1,
+            exampleCosts: [
+                (chars: 500, cost: calculateStoryCost(characterCount: 500)),
+                (chars: 2000, cost: calculateStoryCost(characterCount: 2000)),
+                (chars: 5000, cost: calculateStoryCost(characterCount: 5000))
+            ]
+        )
+    }
+    
     // MARK: - Keychain Operations
     private func loadBalanceFromKeychain() {
         if let storedBalance = UserDefaults.standard.object(forKey: "credit_balance") as? Int {
@@ -71,6 +106,19 @@ class CreditWallet: ObservableObject {
     private func getAuthToken() -> String? {
         // In a real implementation, this would get the token from AuthService
         return UserDefaults.standard.string(forKey: "auth_token")
+    }
+}
+
+// MARK: - Pricing Information
+public struct PricingInfo: Sendable {
+    public let costPerCredit: Double
+    public let creditsPer1000Chars: Int
+    public let exampleCosts: [(chars: Int, cost: Double)]
+    
+    public init(costPerCredit: Double, creditsPer1000Chars: Int, exampleCosts: [(chars: Int, cost: Double)]) {
+        self.costPerCredit = costPerCredit
+        self.creditsPer1000Chars = creditsPer1000Chars
+        self.exampleCosts = exampleCosts
     }
 }
 

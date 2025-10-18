@@ -23,6 +23,9 @@ struct CreateView: View {
                     // Story Input
                     storyInputSection
                     
+                    // Pricing Information
+                    pricingInformationSection
+                    
                     // Pipeline Configuration
                     pipelineConfigurationSection
                     
@@ -117,6 +120,50 @@ struct CreateView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
         }
+    }
+    
+    // MARK: - Pricing Information
+    private var pricingInformationSection: some View {
+        GroupBox("Pricing Information") {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: "dollarsign.circle.fill")
+                        .foregroundColor(.green)
+                    Text("Cost: $0.08 per credit")
+                        .font(.headline)
+                        .foregroundColor(.green)
+                }
+                
+                Text("1 credit = 1,000 characters")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Example costs:")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    
+                    ForEach([
+                        (chars: 500, label: "Short story"),
+                        (chars: 2000, label: "Medium story"),
+                        (chars: 5000, label: "Long story")
+                    ], id: \.chars) { example in
+                        HStack {
+                            Text(example.label)
+                                .font(.caption)
+                            Spacer()
+                            Text("\(example.chars) chars = $\(String(format: "%.2f", Double(Int(ceil(Double(example.chars) / 1000.0))) * 0.08))")
+                                .font(.caption)
+                                .monospaced()
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.horizontal)
     }
     
     // MARK: - Process Button
