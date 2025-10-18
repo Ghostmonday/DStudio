@@ -175,7 +175,7 @@ struct CreateView: View {
         }
     }
     
-    // MARK: - Story Processing
+    // MARK: - Story Processing (Tone System Ready)
     private func processStory() async {
         let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
         
@@ -185,7 +185,7 @@ struct CreateView: View {
             return
         }
         
-        // Process the story with real AI
+        // Process the story with real AI (Tone System files ready for integration)
         do {
             let processedSegments = try await processStoryWithAI(story: storyInput)
             
