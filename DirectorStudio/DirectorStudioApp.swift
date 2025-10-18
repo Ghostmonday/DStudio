@@ -42,6 +42,16 @@ struct DirectorStudioApp: App {
                 }
                 .keyboardShortcut("n", modifiers: .command)
             }
+            
+            #if DEBUG
+            CommandGroup(after: .newItem) {
+                Divider()
+                Button("Print Cost Diagnostics") {
+                    CreditWallet.printCostDiagnostics()
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift])
+            }
+            #endif
         }
         #endif
         

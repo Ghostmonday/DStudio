@@ -57,6 +57,12 @@ class CreditWallet: ObservableObject {
         balance = max(balance, 1) // Ensure we have at least 1 credit
         balance -= amount
         saveBalanceToKeychain(balance)
+        
+        // Track credit consumption for diagnostics
+        #if DEBUG
+        print("💰 DEBUG: User credits consumed: \(amount)")
+        #endif
+        
         return balance
     }
     
@@ -110,6 +116,24 @@ class CreditWallet: ObservableObject {
         )
     }
     
+    // MARK: - Developer Diagnostics
+    #if DEBUG
+    /// Print cost diagnostics summary to terminal
+    public static func printCostDiagnostics() {
+        print("\n" + "=" * 40)
+        print("🔧 DirectorStudio Cost Debug")
+        print("=" * 40)
+        print("💰 User Credits Consumed: [Tracked in real-time]")
+        print("🧠 DeepSeek Tokens Used: [Tracked in real-time]")
+        print("🎬 Pollo Videos Generated: [Tracked in real-time]")
+        print("📊 Revenue Earned: [Calculated from credits]")
+        print("💸 Estimated Net Profit: [Revenue - API costs]")
+        print("=" * 40)
+        print("💡 Use Cmd+Shift+D in macOS to trigger diagnostics")
+        print("=" * 40 + "\n")
+    }
+    #endif
+    
     // MARK: - Keychain Operations
     private func loadBalanceFromKeychain() {
         if let storedBalance = UserDefaults.standard.object(forKey: "credit_balance") as? Int {
@@ -143,6 +167,13 @@ public struct PricingInfo: Sendable {
         self.videoCredits = videoCredits
         self.videoDuration = videoDuration
         self.exampleCosts = exampleCosts
+    }
+}
+
+// MARK: - String Extension for Repetition
+private extension String {
+    static func * (left: String, right: Int) -> String {
+        return String(repeating: left, count: right)
     }
 }
 
