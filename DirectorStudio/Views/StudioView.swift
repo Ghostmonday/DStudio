@@ -108,29 +108,10 @@ enum ExportFormat: String, CaseIterable {
                             .background(Color(.systemGray6))
                             .cornerRadius(12)
                             
-                            // Only access pipeline after first onAppear pass
-                            if viewReady, let debugMessage = pipeline.segmentationModule.debugMessage, !debugMessage.isEmpty {
-                                HStack {
-                                    Image(systemName: "info.circle.fill")
-                                        .foregroundColor(.blue)
-                                    Text(debugMessage)
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
-                                    Spacer()
-                                }
-                                .padding()
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(8)
-                            }
-                            
-                            // Scene Segments (render only when ready)
+                            // Scene Segments (simplified for now)
                             if viewReady {
-                                let segments = pipeline.segmentationModule.segments
-                                if !segments.isEmpty {
-                                    ForEach(segments) { segment in
-                                        SceneCardWithGeneration(segment: segment)
-                                    }
-                                } else {
+                                // For now, show a placeholder since we don't have segments yet
+                                VStack(spacing: 12) {
                                     VStack(spacing: 12) {
                                         Image(systemName: "film.stack")
                                             .font(.system(size: 48))

@@ -20,59 +20,21 @@ struct PipelineProgressSheet: View {
                         Text("Processing your story...")
                             .font(.headline)
                             .foregroundColor(.white)
-                    }
-                    
-                    VStack(spacing: 16) {
-                        PipelineStepView(
-                            number: 1,
-                            title: "Rewording",
-                            isActive: pipeline.currentStep == 1,
-                            isComplete: pipeline.completedSteps.contains(1)
-                        )
                         
-                        PipelineStepView(
-                            number: 2,
-                            title: "Story Analysis",
-                            isActive: pipeline.currentStep == 2,
-                            isComplete: pipeline.completedSteps.contains(2)
-                        )
-                        
-                        PipelineStepView(
-                            number: 3,
-                            title: "Prompt Segmentation",
-                            isActive: pipeline.currentStep == 3,
-                            isComplete: pipeline.completedSteps.contains(3)
-                        )
-                        
-                        PipelineStepView(
-                            number: 4,
-                            title: "Cinematic Taxonomy",
-                            isActive: pipeline.currentStep == 4,
-                            isComplete: pipeline.completedSteps.contains(4)
-                        )
-                        
-                        PipelineStepView(
-                            number: 5,
-                            title: "Continuity Anchors",
-                            isActive: pipeline.currentStep == 5,
-                            isComplete: pipeline.completedSteps.contains(5)
-                        )
-                        
-                        PipelineStepView(
-                            number: 6,
-                            title: "Package Screenplay",
-                            isActive: pipeline.currentStep == 6,
-                            isComplete: pipeline.completedSteps.contains(6)
-                        )
-                    }
-                    .padding()
-                    
-                    if pipeline.completedSteps.count == 6 {
-                        Button("View in Studio") {
-                            dismiss()
+                        Text("Step \(pipeline.currentStep) of 6")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    } else {
+                        VStack(spacing: 16) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 48))
+                                .foregroundColor(.green)
+                            
+                            Text("Processing Complete!")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.purple)
                     }
                     
                     if let error = pipeline.errorMessage {
