@@ -2,8 +2,8 @@
 
 This file demonstrates the local-to-PR workflow.
 
-Created: Sat Oct 18 22:38:42 PDT 2025
-Title: UI Components & Views Review
-Description: BugBot scan of all UI components, views, sheets, and user interface elements
+Created: Sat Oct 18 22:38:46 PDT 2025
+Title: Pipeline & Processing Modules Review
+Description: BugBot scan of all pipeline modules, processing logic, and continuity engine
 
 This shows how local changes get converted to PRs.
