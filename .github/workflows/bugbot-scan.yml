@@ -1,0 +1,30 @@
+name: BugBot PR Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  scan:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Swift
+        uses: fwal/setup-swift@v1
+        with:
+          swift-version: '5.9'
+
+      - name: Run SwiftLint
+        run: |
+          brew install swiftlint || echo "Already installed"
+          swiftlint --strict
+
+      - name: Build Project
+        run: |
+          xcodebuild -scheme DirectorStudio -destination 'platform=iOS Simulator,name=iPhone 14' build
+
+      - name: Run Tests
+        run: |
+          xcodebuild test -scheme DirectorStudio -destination 'platform=iOS Simulator,name=iPhone 14'
+
