@@ -31,13 +31,24 @@ echo "🚀 Smart PR creation: $TITLE"
 
 # Function to create feature branch
 create_branch() {
+    # Check if we're in a git repository
+    if ! git rev-parse --git-dir &> /dev/null; then
+        echo "❌ Not in a git repository"
+        echo "Initializing git repository..."
+        git init
+        git remote add origin https://github.com/Ghostmonday/DStudio.git
+        echo "✅ Git repository initialized"
+    fi
+    
     BRANCH="feature/$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')-$(date +%Y%m%d-%H%M%S)"
     
-    if [ "$(git branch --show-current)" = "main" ]; then
+    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+    
+    if [ -z "$CURRENT_BRANCH" ] || [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
         git checkout -b "$BRANCH"
         echo "✅ Created feature branch: $BRANCH"
     else
-        BRANCH=$(git branch --show-current)
+        BRANCH="$CURRENT_BRANCH"
         echo "✅ Using existing branch: $BRANCH"
     fi
 }

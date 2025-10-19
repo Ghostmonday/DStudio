@@ -110,29 +110,39 @@ struct StoryAnalysis: Codable {
     }
 }
 
-// MARK: - Director Studio Project (Legacy Support)
-struct DirectorStudioProject: Identifiable, Codable {
+// MARK: - Scene Model (for TimelineView)
+struct SceneModel: Identifiable, Codable {
     let id: UUID
-    var title: String
-    let screenplayId: UUID
-    var scenes: [DirectorStudioScene]
-    let createdAt: Date
-    var updatedAt: Date
+    let title: String
+    let description: String
+    let duration: Int
+    let thumbnailURL: URL?
+    let videoURL: URL?
+    let status: SceneStatus
     
     init(
         id: UUID = UUID(),
         title: String,
-        screenplayId: UUID = UUID(),
-        scenes: [DirectorStudioScene] = [],
-        createdAt: Date = Date(),
-        updatedAt: Date = Date()
+        description: String,
+        duration: Int,
+        thumbnailURL: URL? = nil,
+        videoURL: URL? = nil,
+        status: SceneStatus = .pending
     ) {
         self.id = id
         self.title = title
-        self.screenplayId = screenplayId
-        self.scenes = scenes
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
+        self.description = description
+        self.duration = duration
+        self.thumbnailURL = thumbnailURL
+        self.videoURL = videoURL
+        self.status = status
+    }
+    
+    enum SceneStatus: String, Codable {
+        case pending
+        case generating
+        case complete
+        case failed
     }
 }
 
@@ -192,34 +202,7 @@ struct DialogueLine: Identifiable, Codable {
     }
 }
 
-// MARK: - Scene Control Config
-struct SceneControlConfig: Codable {
-    var targetDuration: Int
-    var shotPreference: ShotPreference
-    var pacing: Pacing
-    
-    init(
-        targetDuration: Int = 20,
-        shotPreference: ShotPreference = .balanced,
-        pacing: Pacing = .moderate
-    ) {
-        self.targetDuration = targetDuration
-        self.shotPreference = shotPreference
-        self.pacing = pacing
-    }
-    
-    enum ShotPreference: String, Codable, CaseIterable {
-        case closeUps = "Close-ups"
-        case wideShots = "Wide Shots"
-        case balanced = "Balanced"
-    }
-    
-    enum Pacing: String, Codable, CaseIterable {
-        case slow = "Slow"
-        case moderate = "Moderate"
-        case fast = "Fast"
-    }
-}
+// MARK: - Scene Control Config (defined in DirectorStudioApp.swift)
 
 // MARK: - Pipeline Processing Result
 struct PipelineResult {
@@ -263,22 +246,4 @@ enum ProcessingError: Error, LocalizedError {
     }
 }
 
-// MARK: - Tag Component Helper
-struct Tag: View {
-    let text: String
-    let icon: String
-    
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.caption2)
-            Text(text)
-                .font(.caption2)
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color.purple.opacity(0.2))
-        .foregroundColor(.purple)
-        .cornerRadius(6)
-    }
-}
+// MARK: - Tag Component (defined in Components/Tag.swift)

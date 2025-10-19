@@ -32,19 +32,19 @@ class DirectorStudioPipeline: ObservableObject {
         currentStep = "Starting processing..."
         
         // Simulate processing steps
-        await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
         progress = 0.25
         currentStep = "Analyzing story..."
         
-        await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 500_000_000)
         progress = 0.5
         currentStep = "Generating segments..."
         
-        await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 500_000_000)
         progress = 0.75
         currentStep = "Creating cinematic tags..."
         
-        await Task.sleep(nanoseconds: 500_000_000)
+        try? await Task.sleep(nanoseconds: 500_000_000)
         progress = 1.0
         currentStep = "Processing complete!"
         
