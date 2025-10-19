@@ -28,7 +28,7 @@ class PromptPackagingModule {
     
     // MARK: - Cinematic Tag Generation
     
-    private func generateCinematicTags(for content: String) -> CinematicTags {
+    private func generateCinematicTags(for content: String) -> CinematicTaxonomy {
         let lowercased = content.lowercased()
         
         // Determine shot type
@@ -49,13 +49,17 @@ class PromptPackagingModule {
         // Determine atmosphere
         let atmosphere = determineAtmosphere(from: lowercased)
         
-        return CinematicTags(
+        return CinematicTaxonomy(
             shotType: shotType,
+            cameraAngle: "medium", // Default value
+            framing: "medium", // Default value
             lighting: lighting,
+            colorPalette: colorPalette ?? "natural", // Provide default
+            lensType: "standard", // Default value
+            cameraMovement: cameraMovement ?? "static", // Provide default
             emotionalTone: emotionalTone,
-            cameraMovement: cameraMovement,
-            colorPalette: colorPalette,
-            atmosphere: atmosphere
+            visualStyle: "cinematic", // Default value
+            actionCues: [] // Default empty array
         )
     }
     
@@ -207,47 +211,63 @@ class PromptPackagingModule {
     
     // MARK: - Style Application
     
-    private func applyCinematicStyle(to tags: CinematicTags) -> CinematicTags {
-        CinematicTags(
+    private func applyCinematicStyle(to tags: CinematicTaxonomy) -> CinematicTaxonomy {
+        CinematicTaxonomy(
             shotType: tags.shotType,
+            cameraAngle: tags.cameraAngle,
+            framing: tags.framing,
             lighting: "Dramatic",
-            emotionalTone: tags.emotionalTone,
-            cameraMovement: "Smooth Tracking",
             colorPalette: "Film Grade",
-            atmosphere: tags.atmosphere
+            lensType: tags.lensType,
+            cameraMovement: "Smooth Tracking",
+            emotionalTone: tags.emotionalTone,
+            visualStyle: "Cinematic",
+            actionCues: tags.actionCues
         )
     }
     
-    private func applyDocumentaryStyle(to tags: CinematicTags) -> CinematicTags {
-        CinematicTags(
+    private func applyDocumentaryStyle(to tags: CinematicTaxonomy) -> CinematicTaxonomy {
+        CinematicTaxonomy(
             shotType: "Medium Shot",
+            cameraAngle: "Eye Level",
+            framing: "Medium",
             lighting: "Natural Light",
-            emotionalTone: "Authentic",
-            cameraMovement: "Handheld",
             colorPalette: "Realistic",
-            atmosphere: "Documentary"
+            lensType: "Standard",
+            cameraMovement: "Handheld",
+            emotionalTone: "Authentic",
+            visualStyle: "Documentary",
+            actionCues: []
         )
     }
     
-    private func applyArtisticStyle(to tags: CinematicTags) -> CinematicTags {
-        CinematicTags(
+    private func applyArtisticStyle(to tags: CinematicTaxonomy) -> CinematicTaxonomy {
+        CinematicTaxonomy(
             shotType: tags.shotType,
+            cameraAngle: tags.cameraAngle,
+            framing: tags.framing,
             lighting: "Creative",
-            emotionalTone: "Expressive",
-            cameraMovement: "Experimental",
             colorPalette: "Stylized",
-            atmosphere: "Artistic"
+            lensType: tags.lensType,
+            cameraMovement: "Experimental",
+            emotionalTone: "Expressive",
+            visualStyle: "Artistic",
+            actionCues: tags.actionCues
         )
     }
     
-    private func applyCommercialStyle(to tags: CinematicTags) -> CinematicTags {
-        CinematicTags(
+    private func applyCommercialStyle(to tags: CinematicTaxonomy) -> CinematicTaxonomy {
+        CinematicTaxonomy(
             shotType: tags.shotType,
+            cameraAngle: tags.cameraAngle,
+            framing: tags.framing,
             lighting: "Bright",
-            emotionalTone: "Energetic",
-            cameraMovement: "Dynamic",
             colorPalette: "Vibrant",
-            atmosphere: "Commercial"
+            lensType: tags.lensType,
+            cameraMovement: "Dynamic",
+            emotionalTone: "Energetic",
+            visualStyle: "Commercial",
+            actionCues: tags.actionCues
         )
     }
 }

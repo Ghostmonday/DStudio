@@ -65,7 +65,8 @@ struct CreateView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.black.ignoresSafeArea()
+                // Hero background with vintage camera theme
+                HeroBackgroundView()
                 
                 ScrollView {
                     VStack(spacing: 24) {

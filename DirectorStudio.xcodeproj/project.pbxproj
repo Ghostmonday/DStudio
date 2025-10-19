@@ -62,6 +62,18 @@
 
 		1A00009FCEFC /* PromptPackagingModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000760A32 /* PromptPackagingModule.swift */; };
 
+
+		1A00004E1058 /* CostMetricsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004544C7 /* CostMetricsManager.swift */; };
+
+
+		1A0000B3107D /* HeroBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000099B0B7 /* HeroBackgroundView.swift */; };
+
+
+		1A0000F3C8F5 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000566FE1 /* SplashScreenView.swift */; };
+
+
+		1A00001B79FE /* RewordingModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00005DA2EC /* RewordingModule.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -121,6 +133,18 @@
 
 
 		1A0000283F20 /* DirectorStudioPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorStudioPipeline.swift; sourceTree = "<group>"; };
+
+
+		1A00004544C7 /* CostMetricsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorStudio/Services/CostMetricsManager.swift"; sourceTree = "<group>"; };
+
+
+		1A000099B0B7 /* HeroBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorStudio/Components/HeroBackgroundView.swift"; sourceTree = "<group>"; };
+
+
+		1A0000566FE1 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorStudio/Components/SplashScreenView.swift"; sourceTree = "<group>"; };
+
+
+		1A00005DA2EC /* RewordingModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DirectorStudio/Modules/RewordingModule.swift"; sourceTree = "<group>"; };
 
 /* End PBXFileReference section */
 
@@ -263,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				1A00007F /* ContinuityEngine.swift */,
+			1A00005DA2EC /* RewordingModule.swift */,
 			1A0000283F20 /* DirectorStudioPipeline.swift */,
 			1A0000760A32 /* PromptPackagingModule.swift */,
 			1A0000C6ABE6 /* PromptSegmentationModule.swift */,
@@ -423,6 +448,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A000003 /* ContentView.swift in Sources */,
+			1A00001B79FE /* RewordingModule.swift in Sources */,
+			1A0000F3C8F5 /* SplashScreenView.swift in Sources */,
+			1A0000B3107D /* HeroBackgroundView.swift in Sources */,
+			1A00004E1058 /* CostMetricsManager.swift in Sources */,
 			1A00009FCEFC /* PromptPackagingModule.swift in Sources */,
 			1A000042133B /* PromptSegmentationModule.swift in Sources */,
 			1A0000C65AFB /* StoryAnalyzerModule.swift in Sources */,

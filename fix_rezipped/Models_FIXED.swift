@@ -197,7 +197,7 @@ struct PromptSegment: Identifiable, Codable, Equatable {
     let index: Int
     var content: String
     var duration: Int
-    var cinematicTags: CinematicTaxonomy?
+    var cinematicTags: CinematicTags?
     var videoURL: URL?
     var generationStatus: GenerationStatus
     
@@ -206,7 +206,7 @@ struct PromptSegment: Identifiable, Codable, Equatable {
         index: Int,
         content: String,
         duration: Int,
-        cinematicTags: CinematicTaxonomy? = nil,
+        cinematicTags: CinematicTags? = nil,
         videoURL: URL? = nil,
         generationStatus: GenerationStatus = .pending
     ) {
@@ -354,4 +354,22 @@ enum ProcessingError: Error, LocalizedError {
     }
 }
 
-// MARK: - Tag Component (defined in Components/Tag.swift)
+// MARK: - Tag Component (UI Helper)
+struct Tag: View {
+    let text: String
+    let icon: String
+    
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.caption2)
+            Text(text)
+                .font(.caption2)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.purple.opacity(0.2))
+        .foregroundColor(.purple)
+        .cornerRadius(6)
+    }
+}

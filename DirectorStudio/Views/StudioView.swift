@@ -28,7 +28,8 @@ struct StudioView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
+                // Hero background with vintage camera theme
+                HeroBackgroundView()
                 
                 if let project = appState.currentProject {
                     ScrollView {
