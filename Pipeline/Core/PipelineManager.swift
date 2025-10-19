@@ -297,24 +297,6 @@ public final class PipelineManager {
     /// Cancel the current pipeline execution
     public func cancel() {
         cancellationToken = true
-<<<<<<< HEAD
-        // Reset any active timeouts on disconnect
-        resetActiveTimeouts()
-        logger.info("Pipeline execution cancelled")
-    }
-    
-    /// Reset active timeouts when pipeline is cancelled or disconnected
-    private func resetActiveTimeouts() {
-        // Cancel any pending timeout tasks
-        // In a real implementation, this would cancel Timer objects or Task.sleep operations
-        logger.debug("Active timeouts reset on disconnect")
-    }
-    
-=======
-        logger.info("Pipeline execution cancelled")
-    }
-    
->>>>>>> origin/main
     /// Update the pipeline configuration
     /// - Parameter config: New configuration
     public func updateConfig(_ config: PipelineConfig) {
@@ -332,11 +314,6 @@ public final class PipelineManager {
         sessionID = UUID()
         pipelineState = PipelineState()
         steps = Self.createStepInfo()
-<<<<<<< HEAD
-        // Reset timeouts on pipeline reset
-        resetActiveTimeouts()
-=======
->>>>>>> origin/main
         logger.info("Pipeline reset for new execution")
     }
     

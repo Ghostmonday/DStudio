@@ -98,11 +98,6 @@ class SoraService: ObservableObject {
                         
                         // Track video generation for diagnostics
                         #if DEBUG
-<<<<<<< HEAD
-                        // Video generation completed
-=======
-                        print("🎬 DEBUG: Pollo video generated")
->>>>>>> origin/main
                         #endif
                         
                         return url

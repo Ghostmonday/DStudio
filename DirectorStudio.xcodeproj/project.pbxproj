@@ -255,25 +255,6 @@
 			sourceTree = "<group>";
 		};
 		1A000061 /* Preview Content */ = {
-<<<<<<< HEAD
-			isa = PBXGroup;
-			children = (
-				1A000007 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		1A00008D /* Persistence */ = {
-			isa = PBXGroup;
-			children = (
-				1A000089 /* PersistenceController.swift */,
-			);
-			path = Persistence;
-			sourceTree = "<group>";
-		};
-		9B3817E82EA35D10009786F7 /* Pipeline */ = {
-=======
->>>>>>> origin/main
 			isa = PBXGroup;
 			children = (
 				9B3817ED2EA35DC4009786F7 /* Config */,

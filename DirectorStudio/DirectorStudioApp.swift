@@ -193,28 +193,6 @@ struct DirectorStudioApp: App {
                 await coordinator.loadCredits()
             }
             
-<<<<<<< HEAD
-        case .inactive:
-            // App becoming inactive
-            break
-            
-        case .background:
-            // App in background
-            break
-            
-        @unknown default:
-            break
-=======
-            #if DEBUG
-            CommandGroup(after: .newItem) {
-                Divider()
-                Button("Print Cost Diagnostics") {
-                    CreditWallet.printCostDiagnostics()
-                }
-                .keyboardShortcut("d", modifiers: [.command, .shift])
-            }
-            #endif
->>>>>>> origin/main
         }
     }
 }
