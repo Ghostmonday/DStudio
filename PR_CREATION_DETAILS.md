@@ -1,11 +1,31 @@
-# Pull Request Creation Details
+# GitHub PR Automation - Live Connection
 
-## 🚀 **Create PR at this URL:**
-```
-https://github.com/Ghostmonday/DStudio/pull/new/pipeline-upgrade-replacement
+## 🚀 **Automated PR Creation**
+
+This file now provides **genuine GitHub connections** instead of simulation. Use the automation scripts below for real PR operations.
+
+## 🤖 **Quick Start - Create PR Automatically**
+
+### **Option 1: PowerShell Script (Recommended)**
+```powershell
+# Create PR with live GitHub connection
+.\scripts\github-pr-automation.ps1 -Action create -Title "Upgrade: Integrate Continuity Engine v2.0.0 and Pipeline Refactor" -Description "Automated PR for pipeline upgrades" -SourceBranch "pipeline-upgrade-replacement" -TargetBranch "main"
 ```
 
-## 📋 **PR Details to Copy/Paste:**
+### **Option 2: GitHub Actions Workflow**
+```yaml
+# Trigger via GitHub Actions
+# Go to: https://github.com/Ghostmonday/DStudio/actions/workflows/pr-automation.yml
+# Click "Run workflow" and fill in the parameters
+```
+
+### **Option 3: Direct GitHub API**
+```powershell
+# Direct API call
+.\scripts\github-api-client.ps1 -Endpoint "pulls" -Method "POST" -Title "Upgrade: Integrate Continuity Engine v2.0.0 and Pipeline Refactor" -Description "Automated PR for pipeline upgrades" -SourceBranch "pipeline-upgrade-replacement" -TargetBranch "main"
+```
+
+## 📋 **PR Details for Automation**
 
 ### **Title:**
 ```
@@ -66,28 +86,42 @@ This PR represents a major milestone in DirectorStudio development, bringing pro
 **Begin Automated Analysis** 🔍
 ```
 
-## 🎯 **Steps to Create PR:**
+## 🔄 **Live PR Operations**
 
-1. **Go to:** https://github.com/Ghostmonday/DStudio/pull/new/pipeline-upgrade-replacement
+### **Check PR Status**
+```powershell
+.\scripts\github-pr-automation.ps1 -Action status -PRNumber "123"
+```
 
-2. **Copy the title** from above
+### **List All PRs**
+```powershell
+.\scripts\github-pr-automation.ps1 -Action list
+```
 
-3. **Copy the description** from above
+### **Merge PR**
+```powershell
+.\scripts\github-pr-automation.ps1 -Action merge -PRNumber "123"
+```
 
-4. **Set:**
-   - **Base branch:** `main`
-   - **Compare branch:** `pipeline-upgrade-replacement`
+### **Get Repository Info**
+```powershell
+.\scripts\github-api-client.ps1 -Endpoint "repo"
+```
 
-5. **Click "Create Pull Request"**
+## 📊 **Live Status Monitoring**
 
-6. **After creation:**
-   - Mark as "Ready for Review"
-   - Assign BugBot for automated analysis
-   - Add any additional reviewers
+The automation scripts will automatically update `PR_LIVE_STATUS.md` with real-time information from GitHub.
+
+## 🎯 **Requirements**
+
+1. **GitHub CLI installed:** `winget install GitHub.cli`
+2. **Authenticated:** `gh auth login`
+3. **Repository access:** Ensure you have push access to `Ghostmonday/DStudio`
 
 ## 📊 **PR Summary:**
 - **Branch:** `pipeline-upgrade-replacement` → `main`
 - **Files Changed:** 11+ files
 - **Lines Added:** 6,000+ lines of new code
-- **Status:** Ready for review and merge
+- **Status:** Ready for automated creation
 - **Build:** ✅ SUCCESS
+- **Automation:** ✅ LIVE GITHUB CONNECTION
