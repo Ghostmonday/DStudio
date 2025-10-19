@@ -2,9 +2,8 @@ import Foundation
 import CoreData
 import SwiftUI
 
-// MARK: - Core Data Stack
+// MARK: - Core Data Stack (Compatibility Layer)
 class PersistenceController: ObservableObject {
-    // BugScan: CoreData ClipJob stability noop touch for analysis
     static let shared = PersistenceController()
     
     let container: NSPersistentContainer

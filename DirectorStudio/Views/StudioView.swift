@@ -79,10 +79,28 @@ struct StudioView: View {
                             .background(Color.white.opacity(0.05))
                             .cornerRadius(12)
                             
+<<<<<<< HEAD
+                            // Segments Section with Video Generation
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Text("Scenes")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                    
+                                    Spacer()
+                                    
+                                    Text("\(project.segments.count) scenes")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                
+                                if project.segments.isEmpty {
+=======
                             // Scene Segments (simplified for now)
                             if viewReady {
                                 // For now, show a placeholder since we don't have segments yet
                                 VStack(spacing: 12) {
+>>>>>>> origin/main
                                     VStack(spacing: 12) {
                                         Image(systemName: "film")
                                             .font(.system(size: 48))

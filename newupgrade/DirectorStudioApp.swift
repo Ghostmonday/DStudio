@@ -8,142 +8,6 @@
 
 import SwiftUI
 import StoreKit
-import BackgroundTasks
-import Combine
-
-// MARK: - Simplified Coordinator
-
-@MainActor
-public class DirectorStudioCoordinator: ObservableObject {
-    @Published public var currentProject: DirectorStudioProject?
-    @Published public var sceneControlConfig = SceneControlConfig()
-    @Published public var isGenerating: Bool = false
-    @Published public var generationProgress: Double = 0.0
-    @Published public var credits: Int = 0
-    @Published public var showingSyncStatus: Bool = false
-    
-    public init() {
-        // Initialize with default values
-        credits = 5
-    }
-    
-    public func createNewProject(title: String, script: String) async throws {
-        // Simplified project creation
-        let project = DirectorStudioProject(
-            id: UUID(),
-            title: title,
-            screenplayId: UUID(),
-            scenes: [],
-            createdAt: Date(),
-            updatedAt: Date()
-        )
-        currentProject = project
-    }
-    
-    public func generateScenes() async {
-        isGenerating = true
-        generationProgress = 0.0
-        
-        // Simulate generation
-        for i in 1...5 {
-            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-            generationProgress = Double(i) / 5.0
-        }
-        
-        isGenerating = false
-        generationProgress = 1.0
-    }
-    
-    public func loadCredits() async {
-        credits = 5 // Default credits
-    }
-    
-    public func loadCurrentProject() async {
-        // Load current project if exists
-    }
-}
-
-// MARK: - Configuration Models
-
-public struct SceneControlConfig {
-    public var automaticMode: Bool = true
-    public var sceneCount: Int = 5
-    public var durationPerScene: Double = 4.0
-    public var budgetLimit: Double = 10.0
-    
-    public init() {}
-}
-
-// MARK: - Data Models
-
-public struct DirectorStudioProject {
-    public let id: UUID
-    public let title: String
-    public let screenplayId: UUID
-    public let scenes: [SceneDraft]
-    public let createdAt: Date
-    public let updatedAt: Date
-    
-    public init(id: UUID, title: String, screenplayId: UUID, scenes: [SceneDraft], createdAt: Date, updatedAt: Date) {
-        self.id = id
-        self.title = title
-        self.screenplayId = screenplayId
-        self.scenes = scenes
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-    }
-}
-
-public struct SceneDraft: Identifiable {
-    public let id: UUID
-    public let projectId: String
-    public let orderIndex: Int
-    public let promptText: String
-    public let duration: Double
-    public let sceneType: String?
-    public let shotType: String?
-    public let createdAt: Date
-    public let updatedAt: Date
-    
-    public init(id: UUID, projectId: String, orderIndex: Int, promptText: String, duration: Double, sceneType: String?, shotType: String?, createdAt: Date, updatedAt: Date) {
-        self.id = id
-        self.projectId = projectId
-        self.orderIndex = orderIndex
-        self.promptText = promptText
-        self.duration = duration
-        self.sceneType = sceneType
-        self.shotType = shotType
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-    }
-}
-
-// MARK: - Credits Purchase Manager
-
-@MainActor
-public class CreditsPurchaseManager: ObservableObject {
-    @Published public var products: [Product] = []
-    @Published public var purchasedProductIDs: Set<String> = []
-    @Published public var isLoading = false
-    @Published public var errorMessage: String?
-    
-    public init() {
-        // Initialize with default values
-    }
-    
-    public func requestProducts() async {
-        // Simplified product request
-    }
-    
-    public func purchase(_ product: Product) async throws -> StoreKit.Transaction? {
-        // Simplified purchase
-        return nil
-    }
-    
-    public func restorePurchases() async throws {
-        // Simplified restore
-    }
-}
 
 @main
 struct DirectorStudioApp: App {
@@ -178,9 +42,19 @@ struct DirectorStudioApp: App {
     // MARK: - Initialization
     
     private func initializeApp() async {
-        // Simplified initialization
+        // Wait for storage to be ready
+        while !LocalStorageManager.shared.isReady {
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1s
+        }
+        
+        // Load initial data
         await coordinator.loadCurrentProject()
         await coordinator.loadCredits()
+        
+        // Trigger initial sync if online
+        if SupabaseSyncEngine.shared.isOnline {
+            await SupabaseSyncEngine.shared.syncNow()
+        }
     }
     
     // MARK: - Lifecycle Handlers
@@ -190,31 +64,24 @@ struct DirectorStudioApp: App {
         case .active:
             // App became active
             Task {
+                await SupabaseSyncEngine.shared.syncNow()
                 await coordinator.loadCredits()
             }
             
-<<<<<<< HEAD
         case .inactive:
             // App becoming inactive
-            break
+            Task {
+                await LocalStorageManager.shared.saveContext()
+            }
             
         case .background:
             // App in background
-            break
+            Task {
+                await LocalStorageManager.shared.saveContext()
+            }
             
         @unknown default:
             break
-=======
-            #if DEBUG
-            CommandGroup(after: .newItem) {
-                Divider()
-                Button("Print Cost Diagnostics") {
-                    CreditWallet.printCostDiagnostics()
-                }
-                .keyboardShortcut("d", modifiers: [.command, .shift])
-            }
-            #endif
->>>>>>> origin/main
         }
     }
 }
@@ -270,8 +137,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         // Perform sync
         Task {
-            // Simplified background sync
-            task.setTaskCompleted(success: true)
+            do {
+                await SupabaseSyncEngine.shared.syncNow()
+                task.setTaskCompleted(success: true)
+            } catch {
+                task.setTaskCompleted(success: false)
+            }
         }
     }
     
@@ -325,13 +196,9 @@ struct ContentView: View {
             }
         }
         .overlay(alignment: .top) {
-            // Sync status banner (simplified)
+            // Sync status banner
             if coordinator.showingSyncStatus {
-                Text("Syncing...")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+                SyncStatusBanner()
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -403,7 +270,7 @@ struct ProjectsListView: View {
 // MARK: - Project Detail View
 
 struct ProjectDetailView: View {
-    let project: DirectorStudioProject
+    let project: Project
     @EnvironmentObject var coordinator: DirectorStudioCoordinator
     @State private var showingSceneControl = false
     
@@ -450,7 +317,7 @@ struct ProjectDetailView: View {
             }
         }
         .sheet(isPresented: $showingSceneControl) {
-            SimpleSceneControlSheet(config: $coordinator.sceneControlConfig)
+            SceneControlSheet(config: $coordinator.sceneControlConfig)
         }
     }
     
@@ -524,7 +391,7 @@ struct ProjectDetailView: View {
             GridItem(.adaptive(minimum: 300), spacing: 16)
         ], spacing: 16) {
             ForEach(project.scenes) { scene in
-                SimpleSceneCard(scene: scene)
+                SceneCard(scene: scene)
             }
         }
     }
@@ -541,29 +408,209 @@ struct GenerateView: View {
     }
 }
 
-// MARK: - Library View (using existing LibraryView.swift)
+// MARK: - Library View
 
-// MARK: - Settings View (using existing SettingsView.swift)
+struct LibraryView: View {
+    var body: some View {
+        Text("Library View")
+            .navigationTitle("Library")
+    }
+}
 
+// MARK: - Settings View
 
-// MARK: - Preview
+struct SettingsView: View {
+    @EnvironmentObject var coordinator: DirectorStudioCoordinator
+    @EnvironmentObject var purchaseManager: CreditsPurchaseManager
+    
+    var body: some View {
+        Form {
+            Section("Account") {
+                HStack {
+                    Text("Credits")
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: "sparkles")
+                        Text("\(coordinator.credits)")
+                    }
+                    .foregroundColor(.accentColor)
+                }
+                
+                NavigationLink("Purchase Credits") {
+                    PurchaseCreditsView()
+                }
+            }
+            
+            Section("Sync") {
+                HStack {
+                    Text("Last Synced")
+                    Spacer()
+                    if let date = SupabaseSyncEngine.shared.lastSyncDate {
+                        Text(date.formatted(.relative(presentation: .named)))
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("Never")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                HStack {
+                    Text("Pending Items")
+                    Spacer()
+                    Text("\(SupabaseSyncEngine.shared.pendingSyncCount)")
+                        .foregroundColor(.secondary)
+                }
+                
+                Button("Sync Now") {
+                    Task {
+                        await SupabaseSyncEngine.shared.syncNow()
+                    }
+                }
+            }
+            
+            Section("Storage") {
+                NavigationLink("Manage Data") {
+                    DataManagementView()
+                }
+            }
+            
+            Section("About") {
+                Link("Privacy Policy", destination: URL(string: "https://directorstudio.app/privacy")!)
+                Link("Terms of Service", destination: URL(string: "https://directorstudio.app/terms")!)
+                
+                HStack {
+                    Text("Version")
+                    Spacer()
+                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .navigationTitle("Settings")
+    }
+}
 
-// MARK: - Missing UI Components
+// MARK: - Purchase Credits View
+
+struct PurchaseCreditsView: View {
+    @EnvironmentObject var purchaseManager: CreditsPurchaseManager
+    @State private var isPurchasing = false
+    
+    var body: some View {
+        List {
+            Section {
+                ForEach(purchaseManager.products) { product in
+                    Button {
+                        Task {
+                            isPurchasing = true
+                            try? await purchaseManager.purchase(product)
+                            isPurchasing = false
+                        }
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(product.displayName)
+                                    .font(.headline)
+                                
+                                Text(product.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Text(product.displayPrice)
+                                .font(.headline)
+                        }
+                    }
+                    .disabled(isPurchasing)
+                }
+            }
+            
+            Section {
+                Button("Restore Purchases") {
+                    Task {
+                        try? await AppStore.sync()
+                    }
+                }
+            }
+        }
+        .navigationTitle("Purchase Credits")
+    }
+}
+
+// MARK: - Data Management View
+
+struct DataManagementView: View {
+    @State private var showingDeleteAlert = false
+    
+    var body: some View {
+        Form {
+            Section("Storage") {
+                Button("Export All Data") {
+                    Task {
+                        let data = try await LocalStorageManager.shared.exportAllData()
+                        // Share exported data
+                    }
+                }
+                
+                Button("Delete Old Data") {
+                    showingDeleteAlert = true
+                }
+            }
+        }
+        .navigationTitle("Data Management")
+        .alert("Delete Old Data?", isPresented: $showingDeleteAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                Task {
+                    try? await LocalStorageManager.shared.deleteOldData(olderThan: 30)
+                }
+            }
+        } message: {
+            Text("This will delete data older than 30 days.")
+        }
+    }
+}
+
+// MARK: - Supporting Views
+
+struct ProjectRow: View {
+    let project: Project
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(project.title)
+                .font(.headline)
+            
+            HStack {
+                Text("\(project.scenes.count) scenes")
+                Text("•")
+                Text(project.updatedAt.formatted(.relative(presentation: .named)))
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+    }
+}
 
 struct NewProjectSheet: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var coordinator: DirectorStudioCoordinator
     
     @State private var title = ""
     @State private var script = ""
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Form {
                 Section("Project Details") {
                     TextField("Title", text: $title)
-                    TextField("Script", text: $script, axis: .vertical)
-                        .lineLimit(5...10)
+                }
+                
+                Section("Screenplay") {
+                    TextEditor(text: $script)
+                        .frame(minHeight: 200)
                 }
             }
             .navigationTitle("New Project")
@@ -574,6 +621,7 @@ struct NewProjectSheet: View {
                         dismiss()
                     }
                 }
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") {
                         Task {
@@ -588,107 +636,7 @@ struct NewProjectSheet: View {
     }
 }
 
-struct ProjectRow: View {
-    let project: DirectorStudioProject
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(project.title)
-                .font(.headline)
-            
-            Text("\(project.scenes.count) scenes")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            Text(project.createdAt.formatted(date: .abbreviated, time: .omitted))
-                .font(.caption2)
-                .foregroundColor(.secondary)
-        }
-        .padding(.vertical, 4)
-    }
-}
-
-// MARK: - Simple Scene Card
-
-struct SimpleSceneCard: View {
-    let scene: SceneDraft
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Scene \(scene.orderIndex)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                Spacer()
-                
-                Text("\(scene.duration, specifier: "%.1f")s")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Text(scene.promptText)
-                .font(.body)
-                .lineLimit(3)
-            
-            if let sceneType = scene.sceneType {
-                Text(sceneType)
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.blue.opacity(0.2))
-                    .foregroundColor(.blue)
-                    .cornerRadius(4)
-            }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(radius: 2)
-    }
-}
-
-// MARK: - Simple Scene Control Sheet
-
-struct SimpleSceneControlSheet: View {
-    @Binding var config: SceneControlConfig
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("Scene Configuration") {
-                    Toggle("Automatic Mode", isOn: $config.automaticMode)
-                    
-                    if !config.automaticMode {
-                        Stepper("Scene Count: \(config.sceneCount)", value: $config.sceneCount, in: 1...30)
-                        Slider(value: $config.durationPerScene, in: 2...20, step: 0.5) {
-                            Text("Duration: \(config.durationPerScene, specifier: "%.1f")s")
-                        }
-                    }
-                }
-                
-                Section("Budget") {
-                    TextField("Budget Limit", value: $config.budgetLimit, format: .currency(code: "USD"))
-                }
-            }
-            .navigationTitle("Scene Control")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
+// MARK: - Preview
 
 #Preview {
     ContentView()

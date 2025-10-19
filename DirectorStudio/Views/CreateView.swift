@@ -6,6 +6,9 @@ struct CreateView: View {
     @State private var projectTitle = ""
     @State private var storyInput = ""
     @State private var showPipelineSheet = false
+    @State private var isProcessing = false
+    @State private var showCompletionAlert = false
+    @State private var processingComplete = false
     
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -23,6 +26,12 @@ struct CreateView: View {
                     // Story Input
                     storyInputSection
                     
+<<<<<<< HEAD
+                    // Pricing Information
+                    pricingInformationSection
+                    
+=======
+>>>>>>> origin/main
                     // Pipeline Configuration
                     pipelineConfigurationSection
                     
@@ -38,7 +47,21 @@ struct CreateView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .sheet(isPresented: $showPipelineSheet) {
+<<<<<<< HEAD
+            PipelineProgressSheet(
+                isProcessing: $isProcessing,
+                processingComplete: $processingComplete
+            )
+        }
+        .alert("Processing Complete", isPresented: $showCompletionAlert) {
+            Button("OK") {
+                resetCreateView()
+            }
+        } message: {
+            Text("Your story has been processed and is ready in the Studio tab.")
+=======
             PipelineProgressSheet()
+>>>>>>> origin/main
         }
     }
     
@@ -103,6 +126,55 @@ struct CreateView: View {
                 .foregroundColor(.white)
             
             VStack(spacing: 12) {
+<<<<<<< HEAD
+                Text("AI Pipeline Ready")
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                
+                Text("All pipeline modules are configured and ready for processing")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                
+                // Developer telemetry (always visible)
+                #if DEBUG
+                Divider()
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("🔧 Developer Stats")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.orange)
+                    
+                    HStack {
+                        Text("Story Length:")
+                        Spacer()
+                        Text("\(storyInput.count) chars")
+                            .font(.caption)
+                            .monospaced()
+                    }
+                    
+                    HStack {
+                        Text("Estimated Credits:")
+                        Spacer()
+                        Text("\(Int(ceil(Double(storyInput.count) / 1000.0)))")
+                            .font(.caption)
+                            .monospaced()
+                    }
+                    
+                    HStack {
+                        Text("Estimated Cost:")
+                        Spacer()
+                        Text("$\(String(format: "%.2f", Double(Int(ceil(Double(storyInput.count) / 1000.0))) * 0.08))")
+                            .font(.caption)
+                            .monospaced()
+                            .foregroundColor(.green)
+                    }
+                }
+                .padding(.top, 8)
+                #endif
+=======
                 Text("PipelineManager integration in progress...")
                     .font(.subheadline)
                     .foregroundColor(.gray)
@@ -113,12 +185,95 @@ struct CreateView: View {
                     .font(.caption)
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
+>>>>>>> origin/main
             }
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
         }
     }
     
+<<<<<<< HEAD
+    // MARK: - Pricing Information
+    private var pricingInformationSection: some View {
+        GroupBox("Pricing Information") {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: "dollarsign.circle.fill")
+                        .foregroundColor(.green)
+                    Text("Cost: $0.08 per credit")
+                        .font(.headline)
+                        .foregroundColor(.green)
+                }
+                
+                Text("1 credit = 1,000 characters")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Divider()
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Story processing costs:")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    
+                    ForEach([
+                        (chars: 500, label: "Short story"),
+                        (chars: 2000, label: "Medium story"),
+                        (chars: 5000, label: "Long story")
+                    ], id: \.chars) { example in
+                        HStack {
+                            Text(example.label)
+                                .font(.caption)
+                            Spacer()
+                            Text("\(example.chars) chars = $\(String(format: "%.2f", Double(Int(ceil(Double(example.chars) / 1000.0))) * 0.08))")
+                                .font(.caption)
+                                .monospaced()
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    HStack {
+                        Image(systemName: "video.fill")
+                            .foregroundColor(.purple)
+                        Text("Video generation:")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    HStack {
+                        Text("20-second video")
+                            .font(.caption)
+                        Spacer()
+                        Text("14 credits = $1.12")
+                            .font(.caption)
+                            .monospaced()
+                            .foregroundColor(.purple)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    // MARK: - Process Button
+    private var processButton: some View {
+        Button(action: {
+            Task {
+                await startProcessing()
+            }
+        }) {
+            HStack(spacing: 12) {
+                if isProcessing {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .tint(.white)
+                } else {
+                    Image(systemName: "bolt.fill")
+                }
+                Text(isProcessing ? "Processing..." : "Process with AI")
+=======
     // MARK: - Process Button
     private var processButton: some View {
         Button(action: {
@@ -130,22 +285,33 @@ struct CreateView: View {
             HStack(spacing: 12) {
                 Image(systemName: "bolt.fill")
                 Text("Process with AI")
+>>>>>>> origin/main
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(
                 LinearGradient(
+<<<<<<< HEAD
+                    colors: isProcessing ? [.gray, .gray] : [.purple, .pink],
+=======
                     colors: [.purple, .pink],
+>>>>>>> origin/main
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             )
             .foregroundColor(.white)
             .cornerRadius(16)
+<<<<<<< HEAD
+            .shadow(color: isProcessing ? .clear : .purple.opacity(0.5), radius: 10)
+        }
+        .disabled(storyInput.isEmpty || !DeepSeekConfig.hasValidAPIKey() || isProcessing)
+=======
             .shadow(color: .purple.opacity(0.5), radius: 10)
         }
         .disabled(storyInput.isEmpty || !DeepSeekConfig.hasValidAPIKey())
+>>>>>>> origin/main
         .padding(.horizontal)
         .padding(.top, 8)
     }
@@ -175,6 +341,214 @@ struct CreateView: View {
         }
     }
     
+<<<<<<< HEAD
+    // MARK: - Processing Control
+    private func startProcessing() async {
+        isProcessing = true
+        showPipelineSheet = true
+        
+        await processStory()
+        
+        // Wait for actual processing to complete
+        isProcessing = false
+        processingComplete = true
+        
+        // Show completion alert only after everything is done
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            showCompletionAlert = true
+        }
+    }
+    
+    private func resetCreateView() {
+        // Reset all input fields
+        projectTitle = ""
+        storyInput = ""
+        
+        // Reset processing state
+        isProcessing = false
+        processingComplete = false
+        showPipelineSheet = false
+        showCompletionAlert = false
+    }
+    
+    // MARK: - Story Processing (Tone System Ready)
+    private func processStory() async {
+        let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
+        
+        // Check if we have a valid API key
+        guard DeepSeekConfig.hasValidAPIKey() else {
+            print("❌ DeepSeek API key not configured")
+            return
+        }
+        
+        // Process the story with real AI (Tone System files ready for integration)
+        do {
+            let processedSegments = try await processStoryWithAI(story: storyInput)
+            
+            // Create a new project with the AI-processed story
+            let newProject = Project(
+                id: UUID(),
+                title: finalTitle,
+                originalStory: storyInput,
+                rewordedStory: storyInput, // Could be enhanced with AI rephrasing
+                analysis: StoryAnalysisCache(
+                    characterCount: storyInput.count,
+                    locationCount: 1,
+                    sceneCount: processedSegments.count
+                ),
+                segments: processedSegments,
+                continuityAnchors: [],
+                createdAt: Date(),
+                updatedAt: Date()
+            )
+            
+            await MainActor.run {
+                appState.projects.append(newProject)
+                appState.currentProject = newProject
+            }
+            
+        } catch {
+            print("❌ AI processing failed: \(error.localizedDescription)")
+            // Fallback to mock segments if AI fails
+            let fallbackProject = Project(
+                id: UUID(),
+                title: finalTitle,
+                originalStory: storyInput,
+                rewordedStory: storyInput,
+                analysis: StoryAnalysisCache(
+                    characterCount: storyInput.count,
+                    locationCount: 1,
+                    sceneCount: 3
+                ),
+                segments: createMockSegments(from: storyInput),
+                continuityAnchors: [],
+                createdAt: Date(),
+                updatedAt: Date()
+            )
+            
+            await MainActor.run {
+                appState.projects.append(fallbackProject)
+                appState.currentProject = fallbackProject
+            }
+        }
+    }
+    
+    // MARK: - AI Story Processing
+    private func processStoryWithAI(story: String) async throws -> [PromptSegment] {
+        let deepSeekService = DeepSeekService()
+        
+        // Step 1: Analyze the story and break it into scenes
+        let analysisPrompt = """
+        Analyze this story and break it into 3-5 cinematic scenes. For each scene, provide:
+        1. Scene content (what happens)
+        2. Characters involved
+        3. Setting/location
+        4. Action taking place
+        5. Props needed
+        6. Emotional tone
+        
+        Story: \(story)
+        
+        Respond in JSON format:
+        {
+          "scenes": [
+            {
+              "content": "Scene description",
+              "characters": ["Character1", "Character2"],
+              "setting": "Location description",
+              "action": "What's happening",
+              "props": ["prop1", "prop2"],
+              "tone": "emotional tone"
+            }
+          ]
+        }
+        """
+        
+        let analysisResponse = try await deepSeekService.sendRequest(
+            systemPrompt: "You are a professional film director. Break down stories into cinematic scenes with detailed production notes.",
+            userPrompt: analysisPrompt,
+            temperature: 0.7,
+            maxTokens: 2000
+        )
+        
+        // Parse the AI response and create segments
+        return try parseAIResponseToSegments(response: analysisResponse)
+    }
+    
+    // MARK: - Parse AI Response
+    private func parseAIResponseToSegments(response: String) throws -> [PromptSegment] {
+        // Extract JSON from response (handle cases where AI adds extra text)
+        let jsonStart = response.firstIndex(of: "{") ?? response.startIndex
+        let jsonEnd = response.lastIndex(of: "}") ?? response.endIndex
+        let jsonString = String(response[jsonStart...jsonEnd])
+        
+        guard let jsonData = jsonString.data(using: .utf8) else {
+            throw AIModuleError.parsingError("Failed to convert JSON string to data")
+        }
+        
+        struct AIResponse: Codable {
+            let scenes: [AIScene]
+        }
+        
+        struct AIScene: Codable {
+            let content: String
+            let characters: [String]
+            let setting: String
+            let action: String
+            let props: [String]
+            let tone: String
+        }
+        
+        let aiResponse = try JSONDecoder().decode(AIResponse.self, from: jsonData)
+        
+        return aiResponse.scenes.enumerated().map { index, scene in
+            PromptSegment(
+                index: index + 1,
+                duration: 4, // Default 4 seconds per scene
+                content: scene.content,
+                characters: scene.characters,
+                setting: scene.setting,
+                action: scene.action,
+                continuityNotes: "AI-generated scene \(index + 1)",
+                location: scene.setting,
+                props: scene.props,
+                tone: scene.tone
+            )
+        }
+    }
+    
+    // MARK: - Mock Segment Creation
+    private func createMockSegments(from story: String) -> [PromptSegment] {
+        // Split story into 3 parts for demo
+        let words = story.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+        let segmentSize = max(1, words.count / 3)
+        
+        var segments: [PromptSegment] = []
+        
+        for i in 0..<3 {
+            let startIndex = i * segmentSize
+            let endIndex = min((i + 1) * segmentSize, words.count)
+            let segmentWords = Array(words[startIndex..<endIndex])
+            let content = segmentWords.joined(separator: " ")
+            
+            let segment = PromptSegment(
+                index: i + 1,
+                duration: 4,
+                content: content.isEmpty ? "Scene \(i + 1) content" : content,
+                characters: ["Character \(i + 1)"],
+                setting: ["Indoor", "Outdoor", "Urban"][i % 3],
+                action: ["Walking", "Talking", "Observing"][i % 3],
+                continuityNotes: "Scene \(i + 1) continuity notes",
+                location: ["Room", "Street", "Park"][i % 3],
+                props: ["Item \(i + 1)"],
+                tone: ["Dramatic", "Peaceful", "Exciting"][i % 3]
+            )
+            segments.append(segment)
+        }
+        
+        return segments
+    }
+=======
     // MARK: - Story Processing
     private func processStory() async {
         let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
@@ -197,6 +571,7 @@ struct CreateView: View {
             appState.currentProject = newProject
         }
     }
+>>>>>>> origin/main
 }
 
 

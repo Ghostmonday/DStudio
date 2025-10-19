@@ -370,7 +370,11 @@ public struct ToneRestorationModule: PipelineModule {
             prompt += """
             
             ORIGINAL SECTION (for reference):
+<<<<<<< HEAD
+            \(section.text.prefix(max(0, min(200, section.text.count))))
+=======
             \(section.text.prefix(200))
+>>>>>>> origin/main
             
             """
         }
@@ -379,7 +383,11 @@ public struct ToneRestorationModule: PipelineModule {
             prompt += """
             
             EMOTIONAL BEATS TO CONSIDER:
+<<<<<<< HEAD
+            \(matchedBeats.prefix(max(0, min(2, matchedBeats.count))).map { "- \($0.type.rawValue): \"\($0.text)\"" }.joined(separator: "\n"))
+=======
             \(matchedBeats.prefix(2).map { "- \($0.type.rawValue): \"\($0.text)\"" }.joined(separator: "\n"))
+>>>>>>> origin/main
             
             """
         }
@@ -388,7 +396,11 @@ public struct ToneRestorationModule: PipelineModule {
             prompt += """
             
             TONE CARRIER PHRASES:
+<<<<<<< HEAD
+            \(matchedPhrases.prefix(max(0, min(2, matchedPhrases.count))).map { "- \($0.phrase)" }.joined(separator: "\n"))
+=======
             \(matchedPhrases.prefix(2).map { "- \($0.phrase)" }.joined(separator: "\n"))
+>>>>>>> origin/main
             
             """
         }
@@ -507,7 +519,11 @@ public struct ToneRestorationModule: PipelineModule {
              word.hasSuffix("ful") || word.hasSuffix("less"))
         }
         
+<<<<<<< HEAD
+        return descriptive.prefix(max(0, min(2, descriptive.count))).joined(separator: " ")
+=======
         return descriptive.prefix(2).joined(separator: " ")
+>>>>>>> origin/main
     }
     
     private func calculateInterventionBreakdown(

@@ -460,7 +460,7 @@ struct PrivacyPolicyView: View {
     }
 }
 
-#Preview {
-    SettingsView()
-        .environmentObject(AppState())
-}
+// #Preview {
+//     SettingsView()
+//         .environmentObject(AppState())
+// }
