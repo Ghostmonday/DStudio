@@ -2,8 +2,8 @@
 
 This file demonstrates the local-to-PR workflow.
 
-Created: Sat Oct 18 22:38:53 PDT 2025
-Title: Data & Persistence Review
-Description: BugBot scan of data models, persistence layer, and synchronization logic
+Created: Sat Oct 18 22:38:56 PDT 2025
+Title: Configuration & Setup Review
+Description: BugBot scan of project configuration, assets, and setup files
 
 This shows how local changes get converted to PRs.
