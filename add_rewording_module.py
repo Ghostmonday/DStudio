@@ -46,3 +46,4 @@ with open('DirectorStudio.xcodeproj/project.pbxproj', 'w') as f:
     f.write(content)
 
 print("Added RewordingModule.swift to project")
+
