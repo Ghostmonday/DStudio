@@ -2,8 +2,8 @@
 
 This file demonstrates the local-to-PR workflow.
 
-Created: Sat Oct 18 22:38:56 PDT 2025
-Title: Configuration & Setup Review
-Description: BugBot scan of project configuration, assets, and setup files
+Created: Sat Oct 18 22:38:59 PDT 2025
+Title: Documentation & Guides Review
+Description: BugBot scan of all documentation, guides, and developer resources
 
 This shows how local changes get converted to PRs.
