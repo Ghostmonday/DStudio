@@ -193,6 +193,7 @@ struct DirectorStudioApp: App {
                 await coordinator.loadCredits()
             }
             
+<<<<<<< HEAD
         case .inactive:
             // App becoming inactive
             break
@@ -203,6 +204,17 @@ struct DirectorStudioApp: App {
             
         @unknown default:
             break
+=======
+            #if DEBUG
+            CommandGroup(after: .newItem) {
+                Divider()
+                Button("Print Cost Diagnostics") {
+                    CreditWallet.printCostDiagnostics()
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift])
+            }
+            #endif
+>>>>>>> origin/main
         }
     }
 }

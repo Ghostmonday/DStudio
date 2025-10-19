@@ -23,11 +23,18 @@ struct PipelineProgressSheet: View {
                             .font(.headline)
                             .foregroundColor(.white)
                         
+<<<<<<< HEAD
                         Text("Analyzing story structure and generating segments")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                     } else if processingComplete {
+=======
+                        Text("Step \(pipeline.currentStep) of 6")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    } else {
+>>>>>>> origin/main
                         VStack(spacing: 16) {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 48))
@@ -37,6 +44,7 @@ struct PipelineProgressSheet: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
+<<<<<<< HEAD
                             
                             Text("Your story has been processed and is ready in the Studio tab.")
                                 .font(.subheadline)
@@ -53,6 +61,8 @@ struct PipelineProgressSheet: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
+=======
+>>>>>>> origin/main
                         }
                     }
                     

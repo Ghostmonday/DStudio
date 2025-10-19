@@ -56,7 +56,11 @@ class CreditWallet: ObservableObject {
         
         // Track credit consumption for diagnostics
         #if DEBUG
+<<<<<<< HEAD
         // Credit consumption tracked
+=======
+        print("💰 DEBUG: User credits consumed: \(amount)")
+>>>>>>> origin/main
         #endif
         
         return balance

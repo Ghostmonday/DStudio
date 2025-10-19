@@ -2,14 +2,24 @@
 //  DirectorStudioPipeline.swift
 //  DirectorStudio
 //
+<<<<<<< HEAD
 //  DirectorStudio Pipeline - Core functionality
+=======
+//  SIMPLIFIED VERSION - Basic pipeline functionality
+>>>>>>> origin/main
 //
 
 import Foundation
 
+<<<<<<< HEAD
 // MARK: - DirectorStudioPipeline
 
 /// Core pipeline class for story processing
+=======
+// MARK: - Simplified DirectorStudioPipeline
+
+/// Simplified pipeline class for basic functionality
+>>>>>>> origin/main
 @MainActor
 public class DirectorStudioPipeline: ObservableObject {
     @Published public var isRunning: Bool = false

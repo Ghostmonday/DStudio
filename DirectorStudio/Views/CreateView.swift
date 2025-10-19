@@ -26,9 +26,12 @@ struct CreateView: View {
                     // Story Input
                     storyInputSection
                     
+<<<<<<< HEAD
                     // Pricing Information
                     pricingInformationSection
                     
+=======
+>>>>>>> origin/main
                     // Pipeline Configuration
                     pipelineConfigurationSection
                     
@@ -44,6 +47,7 @@ struct CreateView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .sheet(isPresented: $showPipelineSheet) {
+<<<<<<< HEAD
             PipelineProgressSheet(
                 isProcessing: $isProcessing,
                 processingComplete: $processingComplete
@@ -55,6 +59,9 @@ struct CreateView: View {
             }
         } message: {
             Text("Your story has been processed and is ready in the Studio tab.")
+=======
+            PipelineProgressSheet()
+>>>>>>> origin/main
         }
     }
     
@@ -119,6 +126,7 @@ struct CreateView: View {
                 .foregroundColor(.white)
             
             VStack(spacing: 12) {
+<<<<<<< HEAD
                 Text("AI Pipeline Ready")
                     .font(.subheadline)
                     .foregroundColor(.green)
@@ -166,12 +174,25 @@ struct CreateView: View {
                 }
                 .padding(.top, 8)
                 #endif
+=======
+                Text("PipelineManager integration in progress...")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                
+                Text("Adding PipelineManager to Xcode project...")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+>>>>>>> origin/main
             }
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
         }
     }
     
+<<<<<<< HEAD
     // MARK: - Pricing Information
     private var pricingInformationSection: some View {
         GroupBox("Pricing Information") {
@@ -252,22 +273,45 @@ struct CreateView: View {
                     Image(systemName: "bolt.fill")
                 }
                 Text(isProcessing ? "Processing..." : "Process with AI")
+=======
+    // MARK: - Process Button
+    private var processButton: some View {
+        Button(action: {
+            showPipelineSheet = true
+            Task {
+                await processStory()
+            }
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: "bolt.fill")
+                Text("Process with AI")
+>>>>>>> origin/main
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(
                 LinearGradient(
+<<<<<<< HEAD
                     colors: isProcessing ? [.gray, .gray] : [.purple, .pink],
+=======
+                    colors: [.purple, .pink],
+>>>>>>> origin/main
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             )
             .foregroundColor(.white)
             .cornerRadius(16)
+<<<<<<< HEAD
             .shadow(color: isProcessing ? .clear : .purple.opacity(0.5), radius: 10)
         }
         .disabled(storyInput.isEmpty || !DeepSeekConfig.hasValidAPIKey() || isProcessing)
+=======
+            .shadow(color: .purple.opacity(0.5), radius: 10)
+        }
+        .disabled(storyInput.isEmpty || !DeepSeekConfig.hasValidAPIKey())
+>>>>>>> origin/main
         .padding(.horizontal)
         .padding(.top, 8)
     }
@@ -297,6 +341,7 @@ struct CreateView: View {
         }
     }
     
+<<<<<<< HEAD
     // MARK: - Processing Control
     private func startProcessing() async {
         isProcessing = true
@@ -503,6 +548,30 @@ struct CreateView: View {
         
         return segments
     }
+=======
+    // MARK: - Story Processing
+    private func processStory() async {
+        let finalTitle = projectTitle.isEmpty ? "Untitled Project" : projectTitle
+        
+        // Create a simple project for now (PipelineManager integration in progress)
+        let newProject = Project(
+            id: UUID(),
+            title: finalTitle,
+            originalStory: storyInput,
+            rewordedStory: nil,
+            analysis: nil,
+            segments: [],
+            continuityAnchors: [],
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        
+        await MainActor.run {
+            appState.projects.append(newProject)
+            appState.currentProject = newProject
+        }
+    }
+>>>>>>> origin/main
 }
 
 
