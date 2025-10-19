@@ -192,7 +192,14 @@ struct DirectorStudioApp: App {
             Task {
                 await coordinator.loadCredits()
             }
-            
+        case .background:
+            // App went to background
+            break
+        case .inactive:
+            // App became inactive
+            break
+        @unknown default:
+            break
         }
     }
 }
