@@ -441,4 +441,3 @@ struct CreateView: View {
         .environmentObject(DirectorStudioPipeline())
         .preferredColorScheme(.dark)
 }
-}
