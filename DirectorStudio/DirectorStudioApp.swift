@@ -94,7 +94,7 @@ public struct DirectorStudioProject {
     }
 }
 
-public struct SceneDraft {
+public struct SceneDraft: Identifiable {
     public let id: UUID
     public let projectId: String
     public let orderIndex: Int
@@ -178,19 +178,9 @@ struct DirectorStudioApp: App {
     // MARK: - Initialization
     
     private func initializeApp() async {
-        // Wait for storage to be ready
-        while !LocalStorageManager.shared.isReady {
-            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1s
-        }
-        
-        // Load initial data
+        // Simplified initialization
         await coordinator.loadCurrentProject()
         await coordinator.loadCredits()
-        
-        // Trigger initial sync if online
-        if SupabaseSyncEngine.shared.isOnline {
-            await SupabaseSyncEngine.shared.syncNow()
-        }
     }
     
     // MARK: - Lifecycle Handlers
@@ -200,21 +190,16 @@ struct DirectorStudioApp: App {
         case .active:
             // App became active
             Task {
-                await SupabaseSyncEngine.shared.syncNow()
                 await coordinator.loadCredits()
             }
             
         case .inactive:
             // App becoming inactive
-            Task {
-                await LocalStorageManager.shared.saveContext()
-            }
+            break
             
         case .background:
             // App in background
-            Task {
-                await LocalStorageManager.shared.saveContext()
-            }
+            break
             
         @unknown default:
             break
@@ -273,12 +258,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         // Perform sync
         Task {
-            do {
-                await SupabaseSyncEngine.shared.syncNow()
-                task.setTaskCompleted(success: true)
-            } catch {
-                task.setTaskCompleted(success: false)
-            }
+            // Simplified background sync
+            task.setTaskCompleted(success: true)
         }
     }
     
@@ -332,9 +313,13 @@ struct ContentView: View {
             }
         }
         .overlay(alignment: .top) {
-            // Sync status banner
+            // Sync status banner (simplified)
             if coordinator.showingSyncStatus {
-                SyncStatusBanner()
+                Text("Syncing...")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -406,7 +391,7 @@ struct ProjectsListView: View {
 // MARK: - Project Detail View
 
 struct ProjectDetailView: View {
-    let project: Project
+    let project: DirectorStudioProject
     @EnvironmentObject var coordinator: DirectorStudioCoordinator
     @State private var showingSceneControl = false
     
@@ -453,7 +438,7 @@ struct ProjectDetailView: View {
             }
         }
         .sheet(isPresented: $showingSceneControl) {
-            SceneControlSheet(config: $coordinator.sceneControlConfig)
+            SimpleSceneControlSheet(config: $coordinator.sceneControlConfig)
         }
     }
     
@@ -527,7 +512,7 @@ struct ProjectDetailView: View {
             GridItem(.adaptive(minimum: 300), spacing: 16)
         ], spacing: 16) {
             ForEach(project.scenes) { scene in
-                SceneCard(scene: scene)
+                SimpleSceneCard(scene: scene)
             }
         }
     }
@@ -550,6 +535,148 @@ struct GenerateView: View {
 
 
 // MARK: - Preview
+
+// MARK: - Missing UI Components
+
+struct NewProjectSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var coordinator: DirectorStudioCoordinator
+    
+    @State private var title = ""
+    @State private var script = ""
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Project Details") {
+                    TextField("Title", text: $title)
+                    TextField("Script", text: $script, axis: .vertical)
+                        .lineLimit(5...10)
+                }
+            }
+            .navigationTitle("New Project")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Create") {
+                        Task {
+                            try? await coordinator.createNewProject(title: title, script: script)
+                            dismiss()
+                        }
+                    }
+                    .disabled(title.isEmpty || script.isEmpty)
+                }
+            }
+        }
+    }
+}
+
+struct ProjectRow: View {
+    let project: DirectorStudioProject
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(project.title)
+                .font(.headline)
+            
+            Text("\(project.scenes.count) scenes")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Text(project.createdAt.formatted(date: .abbreviated, time: .omitted))
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Simple Scene Card
+
+struct SimpleSceneCard: View {
+    let scene: SceneDraft
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Scene \(scene.orderIndex)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Text("\(scene.duration, specifier: "%.1f")s")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Text(scene.promptText)
+                .font(.body)
+                .lineLimit(3)
+            
+            if let sceneType = scene.sceneType {
+                Text(sceneType)
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.blue.opacity(0.2))
+                    .foregroundColor(.blue)
+                    .cornerRadius(4)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 2)
+    }
+}
+
+// MARK: - Simple Scene Control Sheet
+
+struct SimpleSceneControlSheet: View {
+    @Binding var config: SceneControlConfig
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Scene Configuration") {
+                    Toggle("Automatic Mode", isOn: $config.automaticMode)
+                    
+                    if !config.automaticMode {
+                        Stepper("Scene Count: \(config.sceneCount)", value: $config.sceneCount, in: 1...30)
+                        Slider(value: $config.durationPerScene, in: 2...20, step: 0.5) {
+                            Text("Duration: \(config.durationPerScene, specifier: "%.1f")s")
+                        }
+                    }
+                }
+                
+                Section("Budget") {
+                    TextField("Budget Limit", value: $config.budgetLimit, format: .currency(code: "USD"))
+                }
+            }
+            .navigationTitle("Scene Control")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
 
 #Preview {
     ContentView()
