@@ -16,10 +16,7 @@
 		1A000013 /* AIServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000014 /* AIServiceProtocol.swift */; };
 		1A000015 /* AIModuleError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000016 /* AIModuleError.swift */; };
 		1A000017 /* DeepSeekService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000018 /* DeepSeekService.swift */; };
-		1A000019 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001A /* Project.swift */; };
-		1A00001B /* PromptSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001C /* PromptSegment.swift */; };
 		1A00001D /* CinematicTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001E /* CinematicTags.swift */; };
-		1A00002B /* DirectorStudioPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00002C /* DirectorStudioPipeline.swift */; };
 		1A00002D /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00002E /* MainTabView.swift */; };
 		1A00002F /* CreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000030 /* CreateView.swift */; };
 		1A000031 /* StudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000032 /* StudioView.swift */; };
@@ -36,7 +33,6 @@
 		1A000049 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004A /* KeychainService.swift */; };
 		1A00004B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004C /* SettingsView.swift */; };
 		1A00004E /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00004F /* SecretsManager.swift */; };
-		1A000070 /* SceneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00006F /* SceneModel.swift */; };
 		1A000072 /* APIKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000071 /* APIKeyManager.swift */; };
 		1A000074 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000073 /* AuthService.swift */; };
 		1A000076 /* CreditWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000075 /* CreditWallet.swift */; };
@@ -51,6 +47,21 @@
 		1A000088 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000087 /* TimelineView.swift */; };
 		1A00008A /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000089 /* PersistenceController.swift */; };
 		1A0000A0 /* ModuleToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00009F /* ModuleToggle.swift */; };
+
+		1A0000620CE0 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00002835AC /* Models.swift */; };
+
+
+		1A000024C41F /* DirectorStudioPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000283F20 /* DirectorStudioPipeline.swift */; };
+
+
+		1A0000C65AFB /* StoryAnalyzerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000E67026 /* StoryAnalyzerModule.swift */; };
+
+
+		1A000042133B /* PromptSegmentationModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000C6ABE6 /* PromptSegmentationModule.swift */; };
+
+
+		1A00009FCEFC /* PromptPackagingModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000760A32 /* PromptPackagingModule.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,10 +74,7 @@
 		1A000014 /* AIServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIServiceProtocol.swift; sourceTree = "<group>"; };
 		1A000016 /* AIModuleError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModuleError.swift; sourceTree = "<group>"; };
 		1A000018 /* DeepSeekService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekService.swift; sourceTree = "<group>"; };
-		1A00001A /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
-		1A00001C /* PromptSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptSegment.swift; sourceTree = "<group>"; };
 		1A00001E /* CinematicTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinematicTags.swift; sourceTree = "<group>"; };
-		1A00002C /* DirectorStudioPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorStudioPipeline.swift; sourceTree = "<group>"; };
 		1A00002E /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		1A000030 /* CreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateView.swift; sourceTree = "<group>"; };
 		1A000032 /* StudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioView.swift; sourceTree = "<group>"; };
@@ -84,7 +92,6 @@
 		1A00004C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		1A00004F /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
 		1A00005C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
-		1A00006F /* SceneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneModel.swift; sourceTree = "<group>"; };
 		1A000071 /* APIKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyManager.swift; sourceTree = "<group>"; };
 		1A000073 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		1A000075 /* CreditWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditWallet.swift; sourceTree = "<group>"; };
@@ -100,14 +107,79 @@
 		1A000089 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		1A00008B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A00009F /* ModuleToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleToggle.swift; sourceTree = "<group>"; };
+
+		1A00002835AC /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+
+
+		1A0000E67026 /* StoryAnalyzerModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAnalyzerModule.swift; sourceTree = "<group>"; };
+
+
+		1A0000C6ABE6 /* PromptSegmentationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptSegmentationModule.swift; sourceTree = "<group>"; };
+
+
+		1A0000760A32 /* PromptPackagingModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptPackagingModule.swift; sourceTree = "<group>"; };
+
+
+		1A0000283F20 /* DirectorStudioPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectorStudioPipeline.swift; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9B3817E92EA35D3D009786F7 /* Core */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Core; sourceTree = "<group>"; };
-		9B3817EA2EA35D44009786F7 /* Modules */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Modules; sourceTree = "<group>"; };
-		9B3817EB2EA35D62009786F7 /* Storage */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Storage; sourceTree = "<group>"; };
-		9B3817EC2EA35D78009786F7 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
-		9B3817ED2EA35DC4009786F7 /* Config */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Config; sourceTree = "<group>"; };
+		9B3817E92EA35D3D009786F7 /* Core */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		9B3817EA2EA35D44009786F7 /* Modules */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		9B3817EB2EA35D62009786F7 /* Storage */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		9B3817EC2EA35D78009786F7 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		9B3817ED2EA35DC4009786F7 /* Config */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,7 +205,6 @@
 		1A000052 /* DirectorStudio */ = {
 			isa = PBXGroup;
 			children = (
-				9B3817E82EA35D10009786F7 /* Pipeline */,
 				1A000000 /* DirectorStudioApp.swift */,
 				1A000002 /* ContentView.swift */,
 				1A000004 /* Assets.xcassets */,
@@ -146,7 +217,7 @@
 				1A000059 /* Sheets */,
 				1A000060 /* Onboarding */,
 				1A00008D /* Persistence */,
-				1A000061 /* Preview Content */,
+				1A000061 /* Pipeline */,
 			);
 			path = DirectorStudio;
 			sourceTree = "<group>";
@@ -162,11 +233,9 @@
 			isa = PBXGroup;
 			children = (
 				1A00000F /* AppState.swift */,
+			1A00002835AC /* Models.swift */,
 				1A000012 /* DeepSeekConfig.swift */,
-				1A00001A /* Project.swift */,
-				1A00001C /* PromptSegment.swift */,
 				1A00001E /* CinematicTags.swift */,
-				1A00006F /* SceneModel.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -193,8 +262,11 @@
 		1A000056 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				1A00002C /* DirectorStudioPipeline.swift */,
 				1A00007F /* ContinuityEngine.swift */,
+			1A0000283F20 /* DirectorStudioPipeline.swift */,
+			1A0000760A32 /* PromptPackagingModule.swift */,
+			1A0000C6ABE6 /* PromptSegmentationModule.swift */,
+			1A0000E67026 /* StoryAnalyzerModule.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -254,7 +326,7 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
-		1A000061 /* Preview Content */ = {
+		1A000061 /* Pipeline */ = {
 			isa = PBXGroup;
 			children = (
 				9B3817ED2EA35DC4009786F7 /* Config */,
@@ -351,16 +423,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A000003 /* ContentView.swift in Sources */,
+			1A00009FCEFC /* PromptPackagingModule.swift in Sources */,
+			1A000042133B /* PromptSegmentationModule.swift in Sources */,
+			1A0000C65AFB /* StoryAnalyzerModule.swift in Sources */,
+			1A000024C41F /* DirectorStudioPipeline.swift in Sources */,
+			1A0000620CE0 /* Models.swift in Sources */,
 				1A000001 /* DirectorStudioApp.swift in Sources */,
 				1A000010 /* AppState.swift in Sources */,
 				1A000011 /* DeepSeekConfig.swift in Sources */,
 				1A000013 /* AIServiceProtocol.swift in Sources */,
 				1A000015 /* AIModuleError.swift in Sources */,
 				1A000017 /* DeepSeekService.swift in Sources */,
-				1A000019 /* Project.swift in Sources */,
-				1A00001B /* PromptSegment.swift in Sources */,
 				1A00001D /* CinematicTags.swift in Sources */,
-				1A00002B /* DirectorStudioPipeline.swift in Sources */,
 				1A00002D /* MainTabView.swift in Sources */,
 				1A00002F /* CreateView.swift in Sources */,
 				1A000031 /* StudioView.swift in Sources */,
@@ -378,7 +452,6 @@
 				1A000049 /* KeychainService.swift in Sources */,
 				1A00004B /* SettingsView.swift in Sources */,
 				1A00004E /* SecretsManager.swift in Sources */,
-				1A000070 /* SceneModel.swift in Sources */,
 				1A000072 /* APIKeyManager.swift in Sources */,
 				1A000074 /* AuthService.swift in Sources */,
 				1A000076 /* CreditWallet.swift in Sources */,

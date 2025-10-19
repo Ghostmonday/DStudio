@@ -1,0 +1,63 @@
+name: Automated PR Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to process'
+        required: true
+        type: string
+
+jobs:
+  automated-review:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'Ghostmonday'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+    
+    - name: Build and test
+      run: |
+        cd DirectorStudio
+        xcodebuild -scheme DirectorStudio -destination 'platform=iOS Simulator,name=iPhone 15' build
+        echo "✅ Build successful"
+    
+    - name: Run automated fixes
+      run: |
+        chmod +x ./automation/auto-fix.sh
+        ./automation/auto-fix.sh ${{ github.event.pull_request.number }}
+    
+    - name: Auto-merge if ready
+      if: success()
+      run: |
+        chmod +x ./automation/auto-merge.sh
+        ./automation/auto-merge.sh ${{ github.event.pull_request.number }}
+
+  manual-review:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'Ghostmonday'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Comment on PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🤖 Automated workflow triggered. BugBot will review this PR shortly.'
+          })

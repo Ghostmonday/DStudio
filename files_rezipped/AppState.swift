@@ -8,8 +8,8 @@ import Combine
 class AppState: ObservableObject {
     // MARK: - Published Properties
     
-    @Published var currentProject: Project?
-    @Published var projects: [Project] = []
+    @Published var currentProject: ProjectModel?
+    @Published var projects: [ProjectModel] = []
     @Published var isProcessing: Bool = false
     @Published var processingProgress: Double = 0.0
     @Published var processingStatus: String = ""
@@ -30,7 +30,7 @@ class AppState: ObservableObject {
     // MARK: - Project Management
     
     func createProject(title: String, story: String) {
-        let project = Project(
+        let project = ProjectModel(
             title: title,
             story: story
         )
@@ -40,7 +40,7 @@ class AppState: ObservableObject {
         saveProjects()
     }
     
-    func updateProject(_ project: Project) {
+    func updateProject(_ project: ProjectModel) {
         guard let index = projects.firstIndex(where: { $0.id == project.id }) else {
             return
         }
@@ -54,7 +54,7 @@ class AppState: ObservableObject {
         saveProjects()
     }
     
-    func deleteProject(_ project: Project) {
+    func deleteProject(_ project: ProjectModel) {
         projects.removeAll { $0.id == project.id }
         
         if currentProject?.id == project.id {
@@ -64,7 +64,7 @@ class AppState: ObservableObject {
         saveProjects()
     }
     
-    func selectProject(_ project: Project) {
+    func selectProject(_ project: ProjectModel) {
         currentProject = project
     }
     
@@ -153,7 +153,7 @@ class AppState: ObservableObject {
     private func loadPersistedData() {
         // Load projects
         if let data = userDefaults.data(forKey: "DirectorStudio.projects"),
-           let decoded = try? JSONDecoder().decode([Project].self, from: data) {
+           let decoded = try? JSONDecoder().decode([ProjectModel].self, from: data) {
             projects = decoded
         }
         

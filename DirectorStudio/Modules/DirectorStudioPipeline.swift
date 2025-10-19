@@ -2,40 +2,57 @@
 //  DirectorStudioPipeline.swift
 //  DirectorStudio
 //
+//  Simple pipeline wrapper for the UI
 //
 
 import Foundation
+import SwiftUI
+
+// MARK: - Director Studio Pipeline
 
 @MainActor
-public class DirectorStudioPipeline: ObservableObject {
-    @Published public var isRunning: Bool = false
-    @Published public var currentStep: Int = 0
-    @Published public var errorMessage: String?
+class DirectorStudioPipeline: ObservableObject {
+    // MARK: - Published Properties
     
-    public init() {
-        // Initialize with default values
+    @Published var isProcessing: Bool = false
+    @Published var progress: Double = 0.0
+    @Published var currentStep: String = ""
+    
+    // MARK: - Initialization
+    
+    init() {
+        // Simple initialization
     }
     
-    /// Simplified pipeline method
-    public func runFullPipeline(
-        story: String,
-        rewordType: String?,
-        projectTitle: String,
-        enableTransform: Bool = true,
-        enableCinematic: Bool = true,
-        enableBreakdown: Bool = true
-    ) async {
-        await MainActor.run {
-            self.isRunning = true
-            self.currentStep = 1
-        }
+    // MARK: - Public Methods
+    
+    func processStory(_ story: String) async {
+        isProcessing = true
+        progress = 0.0
+        currentStep = "Starting processing..."
         
-        // Simulate processing
-        try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+        // Simulate processing steps
+        await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+        progress = 0.25
+        currentStep = "Analyzing story..."
         
-        await MainActor.run {
-            self.isRunning = false
-            self.currentStep = 0
-        }
+        await Task.sleep(nanoseconds: 500_000_000)
+        progress = 0.5
+        currentStep = "Generating segments..."
+        
+        await Task.sleep(nanoseconds: 500_000_000)
+        progress = 0.75
+        currentStep = "Creating cinematic tags..."
+        
+        await Task.sleep(nanoseconds: 500_000_000)
+        progress = 1.0
+        currentStep = "Processing complete!"
+        
+        isProcessing = false
+    }
+    
+    func cancelProcessing() {
+        isProcessing = false
+        currentStep = "Processing cancelled"
     }
 }
